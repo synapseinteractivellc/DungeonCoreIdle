@@ -16,6 +16,7 @@ function initGame() {
     // Initial render
     UI.updateDisplay();
     UI.renderFeatures();
+    UI.renderUpgrades();
     
     // Start the game loop
     requestAnimationFrame(gameLoop);
@@ -35,6 +36,7 @@ function gameLoop() {
     // Re-render features if there are new unlocks
     if (tickResult.newUnlocks) {
         UI.renderFeatures();
+        UI.renderUpgrades();
     }
     
     // Handle auto-save

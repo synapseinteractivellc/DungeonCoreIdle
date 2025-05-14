@@ -54,6 +54,37 @@ const Game = {
                     unlocked: false,
                     unlockAt: 100 // Total mana required to unlock
                 }
+            ],
+            upgrades: [
+                {
+                    id: 'coreEnhancement',
+                    name: 'Core Enhancement',
+                    description: 'Strengthen your core to absorb more mana with each click.',
+                    baseCost: 25,
+                    effect: 1,  // Adds +1 to manaPerClick
+                    count: 0,
+                    unlocked: true
+                },
+                {
+                    id: 'manaResonance',
+                    name: 'Mana Resonance',
+                    description: 'Tune your core to resonate with ambient mana, increasing click effectiveness.',
+                    baseCost: 100,
+                    effect: 2,  // Adds +2 to manaPerClick
+                    count: 0,
+                    unlocked: false,
+                    unlockAt: 200  // Total mana required to unlock
+                },
+                {
+                    id: 'coreExpansion',
+                    name: 'Core Expansion',
+                    description: 'Expand your core\'s mana absorption surface area.',
+                    baseCost: 500,
+                    effect: 5,  // Adds +5 to manaPerClick
+                    count: 0,
+                    unlocked: false,
+                    unlockAt: 1000  // Total mana required to unlock
+                }
             ]
         };
     },
@@ -78,12 +109,18 @@ const Game = {
         
         // Calculate derived values
         this.calculateManaPerSecond();
+        this.calculateManaPerClick();
         return this.state;
     },
 
     // Helper functions
     calculateFeatureCost(feature) {
         return Math.floor(feature.baseCost * Math.pow(1.15, feature.count));
+    },
+
+    // Calculate upgrade cost based on count
+    calculateUpgradeCost(upgrade) {
+        return Math.floor(upgrade.baseCost * Math.pow(1.25, upgrade.count));
     },
 
     calculateFeatureEffect(feature) {
@@ -125,6 +162,27 @@ const Game = {
         return false;
     },
 
+    // Purchase an upgrade
+    purchaseUpgrade(upgradeId) {
+        const upgrade = this.state.upgrades.find(u => u.id === upgradeId);
+        
+        if (!upgrade) return false;
+        
+        const cost = this.calculateUpgradeCost(upgrade);
+        
+        if (this.state.mana >= cost) {
+            this.state.mana -= cost;
+            upgrade.count++;
+            
+            // Update mana per click value
+            this.calculateManaPerClick();
+            
+            return true;
+        }
+        
+        return false;
+    },
+
     calculateManaPerSecond() {
         this.state.manaPerSecond = 0;
         
@@ -133,12 +191,34 @@ const Game = {
         });
     },
 
+    // Calculate mana per click based on upgrades
+    calculateManaPerClick() {
+        // Start with base value of 1
+        let manaPerClick = 1;
+        
+        // Add effects from all upgrades
+        this.state.upgrades.forEach(upgrade => {
+            manaPerClick += upgrade.effect * upgrade.count;
+        });
+        
+        this.state.manaPerClick = manaPerClick;
+    },
+
     checkUnlocks() {
         let newUnlocks = false;
         
+        // Check features unlocks
         this.state.features.forEach(feature => {
             if (!feature.unlocked && this.state.totalMana >= feature.unlockAt) {
                 feature.unlocked = true;
+                newUnlocks = true;
+            }
+        });
+        
+        // Check upgrades unlocks
+        this.state.upgrades.forEach(upgrade => {
+            if (!upgrade.unlocked && this.state.totalMana >= upgrade.unlockAt) {
+                upgrade.unlocked = true;
                 newUnlocks = true;
             }
         });
