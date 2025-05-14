@@ -9,7 +9,7 @@ const Game = {
         coreLevel: 1,
         coreType: 'Stone Core',
         evolutionProgress: 0,
-        evolutionThreshold: 1000,
+        evolutionThreshold: 1000000,
         lastSave: Date.now(),
         features: [
             {
