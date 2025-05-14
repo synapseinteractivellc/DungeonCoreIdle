@@ -8,12 +8,14 @@ const UI = {
         manaPerSecondDisplay: null,
         featureList: null,
         coreTypeDisplay: null,
-        evolutionBar: null
+        evolutionBar: null,
+        saveButton: null,
+        wipeButton: null
     },
 
     // Initialize UI
     init() {
-        // Cache DOM elements
+    // Cache DOM elements
         this.elements.core = document.getElementById('core');
         this.elements.coreContainer = document.getElementById('coreContainer');
         this.elements.manaDisplay = document.getElementById('manaDisplay');
@@ -21,17 +23,53 @@ const UI = {
         this.elements.featureList = document.getElementById('featureList');
         this.elements.coreTypeDisplay = document.getElementById('coreTypeDisplay');
         this.elements.evolutionBar = document.getElementById('evolutionBar');
+        this.elements.saveButton = document.querySelector('.header-buttons-right button:first-child');
+        this.elements.wipeButton = document.querySelector('.header-buttons-right button:last-child');
         
         // Set up event listeners
         this.setupEventListeners();
     },
 
-    // Set up all event listeners
+    // Add to the setupEventListeners function
     setupEventListeners() {
         // Core click event
         this.elements.core.addEventListener('click', this.handleCoreClick.bind(this));
         
-        // Other event listeners can be added here
+        // Save button event
+        this.elements.saveButton.addEventListener('click', this.handleSaveGame.bind(this));
+        
+        // Wipe button event
+        this.elements.wipeButton.addEventListener('click', this.handleWipeGame.bind(this));
+    },
+
+    // Add new handler methods
+    handleSaveGame() {
+        Game.saveGame();
+        this.showNotification('Game saved successfully!');
+    },
+
+    handleWipeGame() {
+        if (confirm('Are you sure you want to wipe all save data? This cannot be undone.')) {
+            Game.resetGame();
+        }
+    },
+
+    // Add a notification method
+    showNotification(message) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        
+        // Add it to the body
+        document.body.appendChild(notification);
+        
+        // Remove it after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 3000);
     },
 
     // Helper function to format numbers for display
