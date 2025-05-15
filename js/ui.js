@@ -236,7 +236,7 @@ const UI = {
     // Add new method for rendering upgrades
     renderUpgrades() {
         const upgradeList = this.elements.upgradeList;
-        if (!upgradeList) return; // Safety check in case the element doesn't exist yet
+        if (!upgradeList) return; // Safety check
         
         upgradeList.innerHTML = '';
         
@@ -263,9 +263,17 @@ const UI = {
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                     <div class="feature-effect">+${upgrade.effect} mana storage</div>
                 `;
+            } else if (upgrade.type === 'automation') {
+                // Special display for automation upgrades
+                const status = upgrade.count > 0 ? 'Active' : 'Inactive';
+                const statusColor = upgrade.count > 0 ? '#8aff8a' : '#e63946';
+                
+                li.innerHTML = `
+                    <div class="feature-name">${upgrade.name} <span class="feature-count" style="color: ${statusColor}">${status}</span></div>
+                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                    <div class="feature-effect">${upgrade.description}</div>
+                `;
             }
-
-            
             
             // Add click handler
             li.addEventListener('click', () => {
@@ -334,6 +342,33 @@ const UI = {
         
         // Update stats display
         this.updateStatsDisplay();
+    },
+
+    // Create a small indicator when autobuyers purchase something
+    showAutobuyerIndicator(type) {
+        const indicator = document.createElement('div');
+        indicator.className = 'autobuyer-indicator';
+        indicator.textContent = `Auto-purchased ${type}`;
+        indicator.style.position = 'fixed';
+        indicator.style.bottom = '60px';
+        indicator.style.left = '50%';
+        indicator.style.transform = 'translateX(-50%)';
+        indicator.style.backgroundColor = '#4f8a8b';
+        indicator.style.color = 'white';
+        indicator.style.padding = '5px 10px';
+        indicator.style.borderRadius = '4px';
+        indicator.style.fontSize = '0.8rem';
+        indicator.style.opacity = '0.8';
+        indicator.style.zIndex = '999';
+        
+        document.body.appendChild(indicator);
+        
+        // Remove after 2 seconds
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                document.body.removeChild(indicator);
+            }
+        }, 2000);
     }
 };
 

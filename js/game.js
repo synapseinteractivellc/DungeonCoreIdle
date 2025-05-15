@@ -154,6 +154,39 @@ const Game = {
                     unlocked: false,
                     unlockAt: 1000,  // Total mana required to unlock
                     affordable: false
+                },
+                {
+                    id: 'autoFeaturesBuyer',
+                    type: 'automation',
+                    name: 'Mana Feature Automaton',
+                    description: 'Automatically purchases dungeon features when you have enough mana.',
+                    baseCost: 50000,
+                    effect: 'automate',
+                    count: 0,
+                    unlocked: false,
+                    affordable: false
+                },
+                {
+                    id: 'autoUpgradesBuyer',
+                    type: 'automation',
+                    name: 'Click Upgrade Automaton',
+                    description: 'Automatically purchases click upgrades when you have enough mana.',
+                    baseCost: 50000,
+                    effect: 'automate',
+                    count: 0,
+                    unlocked: false,
+                    affordable: false
+                },
+                {
+                    id: 'autoStorageBuyer',
+                    type: 'automation',
+                    name: 'Storage Expansion Automaton',
+                    description: 'Automatically purchases storage upgrades when you have enough mana.',
+                    baseCost: 50000,
+                    effect: 'automate',
+                    count: 0,
+                    unlocked: false,
+                    affordable: false
                 }
             ]
         };
@@ -369,6 +402,71 @@ const Game = {
         this.state.manaCapacity = baseCapacity * totalMultiplier;
     },
 
+    // Process autobuyers in the game loop
+    processAutobuyers(deltaTime) {
+        // Check if we have any active autobuyers
+        const autoFeaturesBuyer = this.state.upgrades.find(u => u.id === 'autoFeaturesBuyer');
+        const autoUpgradesBuyer = this.state.upgrades.find(u => u.id === 'autoUpgradesBuyer');
+        const autoStorageBuyer = this.state.upgrades.find(u => u.id === 'autoStorageBuyer');
+        
+        let purchaseMade = false;
+        
+        // Process features autobuyer
+        if (autoFeaturesBuyer && autoFeaturesBuyer.count > 0) {
+            // Sort features by cost (cheapest first)
+            const affordableFeatures = this.state.features
+                .filter(f => f.unlocked)
+                .sort((a, b) => this.calculateFeatureCost(a) - this.calculateFeatureCost(b));
+            
+            // Try to buy each feature
+            for (const feature of affordableFeatures) {
+                if (this.purchaseFeature(feature.id)) {
+                    purchaseMade = true;
+                    // Show indicator
+                    UI.showAutobuyerIndicator(`Feature: ${feature.name}`);
+                    break; // Only buy one feature per tick
+                }
+            }
+        }
+        
+        // Process click upgrades autobuyer
+        if (autoUpgradesBuyer && autoUpgradesBuyer.count > 0) {
+            // Sort upgrades by cost for 'click' type
+            const clickUpgrades = this.state.upgrades
+                .filter(u => u.unlocked && u.type === 'click')
+                .sort((a, b) => this.calculateUpgradeCost(a) - this.calculateUpgradeCost(b));
+            
+            // Try to buy each upgrade
+            for (const upgrade of clickUpgrades) {
+                if (this.purchaseUpgrade(upgrade.id)) {
+                    purchaseMade = true;
+                    // Show indicator
+                    UI.showAutobuyerIndicator(`Upgrade: ${upgrade.name}`);
+                    break; // Only buy one upgrade per tick
+                }
+            }
+        }
+        
+        // Process storage upgrades autobuyer
+        if (autoStorageBuyer && autoStorageBuyer.count > 0) {
+            // Sort upgrades by cost for 'storage' type
+            const storageUpgrades = this.state.upgrades
+                .filter(u => u.unlocked && u.type === 'storage')
+                .sort((a, b) => this.calculateUpgradeCost(a) - this.calculateUpgradeCost(b));
+            
+            // Try to buy each upgrade
+            for (const upgrade of storageUpgrades) {
+                if (this.purchaseUpgrade(upgrade.id)) {
+                    purchaseMade = true;
+                    UI.showAutobuyerIndicator(`Upgrade: ${upgrade.name}`);
+                    break;
+                }
+            }
+        }
+        
+        return purchaseMade;
+    },
+
     // Add a method to update play time
     updatePlayTime() {
         const now = Date.now();
@@ -496,6 +594,9 @@ const Game = {
         // Process research progress
         const researchComplete = Research.processResearch(deltaTime);
         
+        // Process autobuyers
+        const autobuyerPurchase = this.processAutobuyers(deltaTime);
+        
         // Check for unlocks and evolution
         const newUnlocks = this.checkUnlocks();
         const canEvolve = this.checkEvolution();
@@ -505,7 +606,7 @@ const Game = {
             newUnlocks,
             canEvolve,
             researchComplete,
-            needsUIUpdate: newUnlocks || newAffordable || researchComplete
+            needsUIUpdate: newUnlocks || newAffordable || researchComplete || autobuyerPurchase
         };
     },
 

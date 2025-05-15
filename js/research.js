@@ -281,6 +281,51 @@ const Research = {
                         completed: false,
                         requires: ["coreEnhancement2"],
                         tier: 3
+                    },
+                    {
+                        id: "autoFeaturesBuyer",
+                        name: "Autonomous Mana Channeling",
+                        description: "Develop autonomous processes that automatically create dungeon features when sufficient mana is available.",
+                        cost: 10000,
+                        researchTime: 600, // 10 minutes
+                        effect: {
+                            type: "unlockFeature",
+                            value: "autoFeaturesBuyer"
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["coreEnhancement2"],
+                        tier: 3
+                    },
+                    {
+                        id: "autoUpgradesBuyer",
+                        name: "Core Self-Optimization",
+                        description: "Enable your core to autonomously apply click upgrades when enough mana is accumulated.",
+                        cost: 10000,
+                        researchTime: 600, // 10 minutes
+                        effect: {
+                            type: "unlockFeature",
+                            value: "autoUpgradesBuyer"
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["coreEnhancement2"],
+                        tier: 3
+                    },
+                    {
+                        id: "autoStorageBuyer",
+                        name: "Dimensional Auto-Expansion",
+                        description: "Allow your core to automatically expand its storage capacity when sufficient mana is available.",
+                        cost: 10000,
+                        researchTime: 600, // 10 minutes
+                        effect: {
+                            type: "unlockFeature",
+                            value: "autoStorageBuyer"
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["coreEnhancement2"],
+                        tier: 3
                     }
                 ]
             }
@@ -498,6 +543,23 @@ const Research = {
                 // This will be handled when we implement evolution
                 // Just a placeholder for now
                 console.log(`Evolution unlocked: ${effect.value}`);
+                break;
+                
+            case "unlockFeature":
+                // Handle existing feature unlocks
+                console.log(`Feature unlocked: ${effect.value}`);
+                
+                // Add special handling for autobuyer unlocks
+                if (effect.value === "autoFeaturesBuyer" || 
+                    effect.value === "autoUpgradesBuyer" || 
+                    effect.value === "autoStorageBuyer") {
+                    
+                    // Find the upgrade in the upgrades list and unlock it
+                    const upgrade = Game.state.upgrades.find(u => u.id === effect.value);
+                    if (upgrade) {
+                        upgrade.unlocked = true;
+                    }
+                }
                 break;
         }
     },
