@@ -34,11 +34,11 @@ function gameLoop() {
     UI.updateDisplay();
     
     // Re-render features if there are new unlocks
-    if (tickResult.newUnlocks) {
+    if (tickResult.newUnlocks || tickResult.needsUIUpdate) {
         UI.renderFeatures();
         UI.renderUpgrades();
     }
-    
+        
     // Handle auto-save
     if (now - lastSaveTime > saveInterval) {
         Game.saveGame();

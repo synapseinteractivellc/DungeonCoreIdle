@@ -34,7 +34,8 @@ const Game = {
                     baseCost: 10,
                     baseEffect: 0.1,
                     count: 0,
-                    unlocked: true
+                    unlocked: true,
+                    affordable: false
                 },
                 {
                     id: 'crystalFormation',
@@ -44,7 +45,9 @@ const Game = {
                     baseCost: 50,
                     baseEffect: 0.5,
                     count: 0,
-                    unlocked: true
+                    unlocked: false,
+                    unlockAt: 100, // Total mana required to unlock
+                    affordable: false
                 },
                 {
                     id: 'manaPool',
@@ -54,7 +57,9 @@ const Game = {
                     baseCost: 200,
                     baseEffect: 2,
                     count: 0,
-                    unlocked: true
+                    unlocked: false,
+                    unlockAt: 500, // Total mana required to unlock
+                    affordable: false
                 },
                 {
                     id: 'fungalGrowth',
@@ -65,7 +70,8 @@ const Game = {
                     baseEffect: 5,
                     count: 0,
                     unlocked: false,
-                    unlockAt: 100 // Total mana required to unlock
+                    unlockAt: 1000, // Total mana required to unlock
+                    affordable: false
                 }
             ],
             upgrades: [
@@ -77,7 +83,8 @@ const Game = {
                     baseCost: 75,
                     effect: 100,  // Adds +100 to manaCapacity
                     count: 0,
-                    unlocked: true
+                    unlocked: true,
+                    affordable: false
                 },
                 {
                     id: 'manaCapacityII',
@@ -88,7 +95,8 @@ const Game = {
                     effect: 500,  // Adds +500 to manaCapacity
                     count: 0,
                     unlocked: false,
-                    unlockAt: 500
+                    unlockAt: 500,
+                    affordable: false
                 },
                 {
                     id: 'manaCapacityIII',
@@ -99,7 +107,8 @@ const Game = {
                     effect: 2500,  // Adds +2500 to manaCapacity
                     count: 0,
                     unlocked: false,
-                    unlockAt: 2000
+                    unlockAt: 2000,
+                    affordable: false
                 },
                 {
                     id: 'coreEnhancement',
@@ -109,7 +118,8 @@ const Game = {
                     baseCost: 25,
                     effect: 1,  // Adds +1 to manaPerClick
                     count: 0,
-                    unlocked: true
+                    unlocked: true,
+                    affordable: false
                 },
                 {
                     id: 'manaResonance',
@@ -120,7 +130,8 @@ const Game = {
                     effect: 2,  // Adds +2 to manaPerClick
                     count: 0,
                     unlocked: false,
-                    unlockAt: 200  // Total mana required to unlock
+                    unlockAt: 200, // Total mana required to unlock
+                    affordable: false  
                 },
                 {
                     id: 'coreExpansion',
@@ -131,7 +142,8 @@ const Game = {
                     effect: 5,  // Adds +5 to manaPerClick
                     count: 0,
                     unlocked: false,
-                    unlockAt: 1000  // Total mana required to unlock
+                    unlockAt: 1000,  // Total mana required to unlock
+                    affordable: false
                 }
             ]
         };
@@ -352,7 +364,41 @@ const Game = {
     },
 
     checkAffordability() {
-        // Determine if a feature or upgrade is affordable now that wasn't affordable last check
+        let newAffordable = false;
+        
+        // Check features
+        this.state.features.forEach(feature => {
+            if (feature.unlocked) {
+                const cost = this.calculateFeatureCost(feature);
+                // If we couldn't afford it before but can now
+                if (!feature.affordable && this.state.mana >= cost) {
+                    feature.affordable = true;
+                    newAffordable = true;
+                } 
+                // If we could afford it before but can't now
+                else if (feature.affordable && this.state.mana < cost) {
+                    feature.affordable = false;
+                }
+            }
+        });
+        
+        // Check upgrades
+        this.state.upgrades.forEach(upgrade => {
+            if (upgrade.unlocked) {
+                const cost = this.calculateUpgradeCost(upgrade);
+                // If we couldn't afford it before but can now
+                if (!upgrade.affordable && this.state.mana >= cost) {
+                    upgrade.affordable = true;
+                    newAffordable = true;
+                } 
+                // If we could afford it before but can't now
+                else if (upgrade.affordable && this.state.mana < cost) {
+                    upgrade.affordable = false;
+                }
+            }
+        });
+        
+        return newAffordable;
     },
 
     // Game loop - process idle gains
@@ -379,12 +425,12 @@ const Game = {
         // Check for unlocks and evolution
         const newUnlocks = this.checkUnlocks();
         const canEvolve = this.checkEvolution();
-        const checkAffordability = this.checkAffordability();
+        const newAffordable = this.checkAffordability();
         
         return { 
             newUnlocks,
             canEvolve,
-            checkAffordability
+            needsUIUpdate: newUnlocks || newAffordable
         };
     },
 
