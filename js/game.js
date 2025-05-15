@@ -177,6 +177,18 @@ const Game = {
 
     // Game mechanics
     clickCore() {
+        // Calculate potential mana gain
+        const potentialMana = this.state.mana + this.state.manaPerClick;
+        
+        // Check if adding mana would exceed capacity
+        if (potentialMana > this.state.manaCapacity) {
+            // Calculate lost mana
+            const lostMana = potentialMana - this.state.manaCapacity;
+            // Add to total mana lost
+            this.state.totalManaLost += lostMana;
+        }
+        
+        // Set mana to min of potential gain or capacity (original code)
         this.state.mana = Math.min(this.state.mana + this.state.manaPerClick, this.state.manaCapacity);
         this.state.totalMana += this.state.manaPerClick;
         this.state.evolutionProgress += this.state.manaPerClick;
@@ -334,7 +346,7 @@ const Game = {
         if (this.state.evolutionProgress >= this.state.evolutionThreshold) {
             // Future evolution mechanic placeholder
             // this.evolveCore();
-            return true;
+            return false;
         }
         return false;
     },
@@ -344,6 +356,18 @@ const Game = {
         // Calculate mana gain for this tick (in seconds)
         const manaGain = (this.state.manaPerSecond * deltaTime) / 1000;
         
+        // Calculate potential new mana value
+        const potentialMana = this.state.mana + manaGain;
+        
+        // Check if adding mana would exceed capacity
+        if (potentialMana > this.state.manaCapacity) {
+            // Calculate lost mana
+            const lostMana = potentialMana - this.state.manaCapacity;
+            // Add to total mana lost
+            this.state.totalManaLost += lostMana;
+        }
+        
+        // Set mana to min of potential or capacity (original code)
         this.state.mana = Math.min(this.state.mana + manaGain, this.state.manaCapacity);
         this.state.totalMana += manaGain;
         this.state.evolutionProgress += manaGain;

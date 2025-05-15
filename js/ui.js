@@ -21,6 +21,7 @@ const UI = {
         
         // Stats displays
         lifetimeManaDisplay: null,
+        manaLostDisplay: null,
         totalClicksDisplay: null,
         featuresPurchasedDisplay: null,
         upgradesPurchasedDisplay: null,
@@ -50,6 +51,7 @@ const UI = {
         
         // Cache stats elements
         this.elements.lifetimeManaDisplay = document.getElementById('lifetimeManaDisplay');
+        this.elements.manaLostDisplay = document.getElementById('manaLostDisplay');
         this.elements.totalClicksDisplay = document.getElementById('totalClicksDisplay');
         this.elements.featuresPurchasedDisplay = document.getElementById('featuresPurchasedDisplay');
         this.elements.upgradesPurchasedDisplay = document.getElementById('upgradesPurchasedDisplay');
@@ -250,6 +252,9 @@ const UI = {
     updateStatsDisplay() {
         // Update lifetime mana
         this.elements.lifetimeManaDisplay.textContent = this.formatNumber(Game.state.totalMana);
+
+        // Update total mana lost
+        this.elements.manaLostDisplay.textContent = this.formatNumber(Game.state.totalManaLost);
         
         // Update total clicks
         this.elements.totalClicksDisplay.textContent = Game.state.totalClicks.toLocaleString();
