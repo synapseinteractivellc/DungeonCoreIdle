@@ -361,6 +361,11 @@ const Research = {
         Game.state.research.activeResearch = null;
         Game.state.research.currentProgress = 0;
         
+        // Reset nav indicator (if UI is initialized)
+        if (window.UI && UI.updateResearchNavIndicator) {
+            UI.updateResearchNavIndicator(0);
+        }
+        
         return true;
     },
 
@@ -421,6 +426,11 @@ const Research = {
         // Reset active research
         research.activeResearch = null;
         research.currentProgress = 0;
+        
+        // Reset nav indicator (if UI is initialized)
+        if (window.UI && UI.updateResearchNavIndicator) {
+            UI.updateResearchNavIndicator(0);
+        }
         
         // Update which research is now available
         this.updateAvailability();

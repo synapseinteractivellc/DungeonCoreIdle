@@ -60,6 +60,17 @@ const UI = {
         this.elements.playTimeDisplay = document.getElementById('playTimeDisplay');
         this.elements.avgManaPerSecondDisplay = document.getElementById('avgManaPerSecondDisplay');
         
+        // Add research progress indicator to the Research tab button
+        const researchButton = document.querySelector('.nav-btn[data-section="research"]');
+        if (researchButton) {
+            // Check if the indicator already exists
+            if (!researchButton.querySelector('.nav-progress-indicator')) {
+                const progressIndicator = document.createElement('div');
+                progressIndicator.className = 'nav-progress-indicator';
+                researchButton.appendChild(progressIndicator);
+            }
+        }
+        
         // Set up event listeners
         this.setupEventListeners();
     },
@@ -75,6 +86,24 @@ const UI = {
         this.elements.navButtons.forEach(button => {
             button.addEventListener('click', this.handleNavigation.bind(this));
         });
+    },
+    
+    updateResearchNavIndicator(progress) {
+        const researchButton = document.querySelector('.nav-btn[data-section="research"]');
+        if (!researchButton) return;
+        
+        const progressIndicator = researchButton.querySelector('.nav-progress-indicator');
+        if (!progressIndicator) return;
+        
+        // Update width based on progress percentage
+        progressIndicator.style.width = `${progress}%`;
+        
+        // Add/remove active class for glow effect
+        if (progress > 0) {
+            progressIndicator.classList.add('active');
+        } else {
+            progressIndicator.classList.remove('active');
+        }
     },
 
     // Add new handler methods
@@ -155,7 +184,7 @@ const UI = {
     createManaParticle(x, y, amount) {
         const particle = document.createElement('div');
         particle.className = 'mana-particle';
-        particle.textContent = '+' + amount;
+        particle.textContent = '+' + this.formatNumber(amount);
         particle.style.left = x + 'px';
         particle.style.top = y + 'px';
         

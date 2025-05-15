@@ -29,6 +29,13 @@ const ResearchUI = {
 
         // Set up event listeners
         this.setupEventListeners();
+
+        if (Game.state.research && Game.state.research.activeResearch) {
+            const progress = Game.state.research.currentProgress * 100;
+            UI.updateResearchNavIndicator(progress);
+        } else {
+            UI.updateResearchNavIndicator(0);
+        }
     },
 
     // Create the research tab structure
@@ -290,6 +297,9 @@ const ResearchUI = {
             // No active research
             if (noActiveResearchElem) noActiveResearchElem.style.display = 'block';
             if (activeResearchDetailsElem) activeResearchDetailsElem.style.display = 'none';
+            
+            // Reset progress on nav button
+            UI.updateResearchNavIndicator(0);
             return;
         }
         
@@ -317,6 +327,9 @@ const ResearchUI = {
         if (this.elements.researchProgressText) {
             this.elements.researchProgressText.textContent = `${Math.floor(progress)}%`;
         }
+        
+        // Update the progress indicator on the nav button
+        UI.updateResearchNavIndicator(progress);
     },
 
     // Update completed research display
