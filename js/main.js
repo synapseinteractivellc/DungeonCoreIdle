@@ -13,10 +13,14 @@ function initGame() {
     // Initialize UI
     UI.init();
     
+    // Initialize Research UI
+    ResearchUI.init();
+    
     // Initial render
     UI.updateDisplay();
     UI.renderFeatures();
     UI.renderUpgrades();
+    ResearchUI.renderResearchPaths();
     
     // Start the game loop
     requestAnimationFrame(gameLoop);
@@ -37,6 +41,18 @@ function gameLoop() {
     if (tickResult.newUnlocks || tickResult.needsUIUpdate) {
         UI.renderFeatures();
         UI.renderUpgrades();
+    }
+    
+    // Update research UI if research completed
+    if (tickResult.researchComplete) {
+        ResearchUI.renderResearchPaths();
+        ResearchUI.updateActiveResearch();
+        
+        // Show a notification
+        UI.showNotification('Research completed!');
+    } else if (Game.state.research && Game.state.research.activeResearch) {
+        // Just update progress bar
+        ResearchUI.updateActiveResearch();
     }
         
     // Handle auto-save

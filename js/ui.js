@@ -25,6 +25,7 @@ const UI = {
         totalClicksDisplay: null,
         featuresPurchasedDisplay: null,
         upgradesPurchasedDisplay: null,
+        researchCompletedDisplay: null,
         playTimeDisplay: null,
         avgManaPerSecondDisplay: null
     },
@@ -55,6 +56,7 @@ const UI = {
         this.elements.totalClicksDisplay = document.getElementById('totalClicksDisplay');
         this.elements.featuresPurchasedDisplay = document.getElementById('featuresPurchasedDisplay');
         this.elements.upgradesPurchasedDisplay = document.getElementById('upgradesPurchasedDisplay');
+        this.elements.researchCompletedDisplay = document.getElementById('researchCompletedDisplay');
         this.elements.playTimeDisplay = document.getElementById('playTimeDisplay');
         this.elements.avgManaPerSecondDisplay = document.getElementById('avgManaPerSecondDisplay');
         
@@ -264,6 +266,12 @@ const UI = {
         
         // Update upgrades purchased
         this.elements.upgradesPurchasedDisplay.textContent = Game.state.upgradesPurchased.toLocaleString();
+        
+        // Update research completed
+        if (this.elements.researchCompletedDisplay && Game.state.research) {
+            this.elements.researchCompletedDisplay.textContent = 
+                Game.state.research.completedResearch ? Game.state.research.completedResearch.length : 0;
+        }
         
         // Update play time
         Game.updatePlayTime();

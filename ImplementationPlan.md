@@ -20,15 +20,15 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 ## Phase 2: Game Systems
 
 ### Research System (Week 3-4)
-- [ ] Implement research tree structure
-- [ ] Create 5 initial research paths:
-  - [ ] Natural Affinity
-  - [ ] Mana Manipulation
-  - [ ] Monster Creation
-  - [ ] Trap Mastery
-  - [ ] Core Enhancement
-- [ ] Add research point accrual system
-- [ ] Implement research effects on game mechanics
+- [X] Implement research tree structure
+- [X] Create 5 initial research paths:
+  - [X] Natural Affinity (implemented as Mana Affinity)
+  - [X] Mana Manipulation
+  - [X] Lure System (implemented as Lures)
+  - [X] Trap Mastery
+  - [X] Core Enhancement
+- [X] Add research point accrual system (implemented using mana instead of separate research points)
+- [X] Implement research effects on game mechanics
 
 ### Dungeon Growth (Week 4-5)
 - [ ] Implement dungeon size mechanic
@@ -72,10 +72,10 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 - [ ] Create settings menu
 
 ### Saving/Loading (Week 10)
-- [ ] Implement save game functionality
-- [ ] Add auto-save feature
-- [ ] Create import/export save options
-- [ ] Add offline progression calculation
+- [X] Implement save game functionality
+- [X] Add auto-save feature
+- [X] Create import/export save options
+- [X] Add offline progression calculation
 
 ### Additional Content (Week 11)
 - [ ] Add achievements system
@@ -125,3 +125,9 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 - Prioritize smooth progression curve
 - Balance active engagement vs. idle progression
 - Ensure meaningful choices in research and evolution paths
+
+## Progress Summary
+- Phase 1 is fully completed
+- Research System from Phase 2 is fully implemented with 5 research paths
+- Saving/Loading from Phase 4 is already implemented
+- Current focus: Dungeon Growth mechanics from Phase 2

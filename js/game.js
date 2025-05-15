@@ -19,10 +19,20 @@ const Game = {
             evolutionThreshold: 1000000,
             lastSave: Date.now(),
             
+            // Multipliers for various game mechanics
+            multipliers: {
+                manaPerSecond: 1,
+                manaPerClick: 1,
+                manaCapacity: 1,
+                evolutionProgress: 1,
+                global: 1
+            },
+            
             // New statistics tracking
             totalClicks: 0,
             featuresPurchased: 0,
             upgradesPurchased: 0,
+            researchCompleted: 0,
             startTime: Date.now(),
             playTime: 0,
             features: [
@@ -167,9 +177,14 @@ const Game = {
             this.loadGame();
         }
         
+        // Initialize the research system
+        Research.init();
+        
         // Calculate derived values
         this.calculateManaPerSecond();
         this.calculateManaPerClick();
+        this.calculateManaCapacity();
+        
         return this.state;
     },
 
@@ -200,10 +215,17 @@ const Game = {
             this.state.totalManaLost += lostMana;
         }
         
-        // Set mana to min of potential gain or capacity (original code)
+        // Set mana to min of potential gain or capacity
         this.state.mana = Math.min(this.state.mana + this.state.manaPerClick, this.state.manaCapacity);
         this.state.totalMana += this.state.manaPerClick;
-        this.state.evolutionProgress += this.state.manaPerClick;
+        
+        // Apply evolution progress multiplier if it exists
+        const evolutionMultiplier = 
+            (this.state.multipliers && this.state.multipliers.evolutionProgress) 
+            ? this.state.multipliers.evolutionProgress 
+            : 1;
+            
+        this.state.evolutionProgress += this.state.manaPerClick * evolutionMultiplier;
         
         // Increment click counter
         this.state.totalClicks++;
@@ -268,41 +290,83 @@ const Game = {
     },
 
     calculateManaPerSecond() {
-        this.state.manaPerSecond = 0;
+        let basePerSecond = 0;
         
+        // Calculate base value from features
         this.state.features.forEach(feature => {
-            this.state.manaPerSecond += this.calculateFeatureEffect(feature);
+            basePerSecond += this.calculateFeatureEffect(feature);
         });
+        
+        // Apply multipliers
+        let totalMultiplier = 1;
+        
+        // Apply specific multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.manaPerSecond) {
+            totalMultiplier *= this.state.multipliers.manaPerSecond;
+        }
+        
+        // Apply global multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.global) {
+            totalMultiplier *= this.state.multipliers.global;
+        }
+        
+        this.state.manaPerSecond = basePerSecond * totalMultiplier;
     },
 
     // Calculate mana per click based on upgrades
     calculateManaPerClick() {
         // Start with base value of 1
-        let manaPerClick = 1;
+        let basePerClick = 1;
         
         // Add effects from all click upgrades
         this.state.upgrades.forEach(upgrade => {
             if (upgrade.type === 'click') {
-                manaPerClick += upgrade.effect * upgrade.count;
+                basePerClick += upgrade.effect * upgrade.count;
             }            
         });
         
-        this.state.manaPerClick = manaPerClick;
+        // Apply multipliers
+        let totalMultiplier = 1;
+        
+        // Apply specific multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.manaPerClick) {
+            totalMultiplier *= this.state.multipliers.manaPerClick;
+        }
+        
+        // Apply global multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.global) {
+            totalMultiplier *= this.state.multipliers.global;
+        }
+        
+        this.state.manaPerClick = basePerClick * totalMultiplier;
     },
 
     // Calculate mana storage
     calculateManaCapacity() {
         // start with base of 100
-        let manaCapacity = 100;
+        let baseCapacity = 100;
 
         // Add effects from all storage upgrades
         this.state.upgrades.forEach(upgrade => {
             if (upgrade.type === 'storage') {
-                manaCapacity += upgrade.effect * upgrade.count;
+                baseCapacity += upgrade.effect * upgrade.count;
             }
         });
 
-        this.state.manaCapacity = manaCapacity;
+        // Apply multipliers
+        let totalMultiplier = 1;
+        
+        // Apply specific multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.manaCapacity) {
+            totalMultiplier *= this.state.multipliers.manaCapacity;
+        }
+        
+        // Apply global multiplier if it exists
+        if (this.state.multipliers && this.state.multipliers.global) {
+            totalMultiplier *= this.state.multipliers.global;
+        }
+        
+        this.state.manaCapacity = baseCapacity * totalMultiplier;
     },
 
     // Add a method to update play time
@@ -417,10 +481,20 @@ const Game = {
             this.state.totalManaLost += lostMana;
         }
         
-        // Set mana to min of potential or capacity (original code)
+        // Set mana to min of potential or capacity
         this.state.mana = Math.min(this.state.mana + manaGain, this.state.manaCapacity);
         this.state.totalMana += manaGain;
-        this.state.evolutionProgress += manaGain;
+        
+        // Apply evolution progress multiplier if it exists
+        const evolutionMultiplier = 
+            (this.state.multipliers && this.state.multipliers.evolutionProgress) 
+            ? this.state.multipliers.evolutionProgress 
+            : 1;
+            
+        this.state.evolutionProgress += manaGain * evolutionMultiplier;
+        
+        // Process research progress
+        const researchComplete = Research.processResearch(deltaTime);
         
         // Check for unlocks and evolution
         const newUnlocks = this.checkUnlocks();
@@ -430,7 +504,8 @@ const Game = {
         return { 
             newUnlocks,
             canEvolve,
-            needsUIUpdate: newUnlocks || newAffordable
+            researchComplete,
+            needsUIUpdate: newUnlocks || newAffordable || researchComplete
         };
     },
 
