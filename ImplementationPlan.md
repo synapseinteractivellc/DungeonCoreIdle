@@ -9,12 +9,12 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 - [X] Implement manual clicking for mana generation
 - [X] Create basic resource tracking (mana, core level)
 - [X] Implement simple dungeon features that provide passive income
-- [ ] Add basic upgrade system for dungeon features
+- [X] Add basic upgrade system for dungeon features
 
 ### Core UI Elements (Week 2-3)
 - [X] Design and implement main game screen
 - [X] Create resource display panels
-- [ ] Implement feature purchase and upgrade interface
+- [X] Implement feature purchase and upgrade interface
 - [ ] Add basic stats tracking
 
 ## Phase 2: Game Systems
