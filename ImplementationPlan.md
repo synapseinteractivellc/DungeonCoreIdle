@@ -15,7 +15,7 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 - [X] Design and implement main game screen
 - [X] Create resource display panels
 - [X] Implement feature purchase and upgrade interface
-- [ ] Add basic stats tracking
+- [X] Add basic stats tracking
 
 ## Phase 2: Game Systems
 

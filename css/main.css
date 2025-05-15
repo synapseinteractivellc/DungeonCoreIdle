@@ -134,10 +134,6 @@ h1 {
     display: flex;
 }
 
-#main-section {
-    display: flex;
-}
-
 .main-panel {
     flex: 3;
     display: flex;
