@@ -60,7 +60,7 @@ const UI = {
         this.elements.playTimeDisplay = document.getElementById('playTimeDisplay');
         this.elements.avgManaPerSecondDisplay = document.getElementById('avgManaPerSecondDisplay');
         
-        // Add research progress indicator to the Research tab button
+        // Add research progress indicator and timer to the Research tab button
         const researchButton = document.querySelector('.nav-btn[data-section="research"]');
         if (researchButton) {
             // Check if the indicator already exists
@@ -68,6 +68,35 @@ const UI = {
                 const progressIndicator = document.createElement('div');
                 progressIndicator.className = 'nav-progress-indicator';
                 researchButton.appendChild(progressIndicator);
+            }
+            
+            // Check if the timer already exists
+            if (!researchButton.querySelector('.nav-timer')) {
+                const timerElement = document.createElement('div');
+                timerElement.className = 'nav-timer research-timer hidden';
+                timerElement.textContent = '--:--';
+                researchButton.appendChild(timerElement);
+            }
+        }
+        
+        // Add mana progress indicator and timer to the Main tab button
+        const mainButton = document.querySelector('.nav-btn[data-section="main"]');
+        if (mainButton) {
+            // Check if the indicator already exists
+            if (!mainButton.querySelector('.nav-progress-indicator')) {
+                const progressIndicator = document.createElement('div');
+                progressIndicator.className = 'nav-progress-indicator';
+                // Add a specific class for styling if needed
+                progressIndicator.classList.add('mana-progress-indicator');
+                mainButton.appendChild(progressIndicator);
+            }
+            
+            // Check if the timer already exists
+            if (!mainButton.querySelector('.nav-timer')) {
+                const timerElement = document.createElement('div');
+                timerElement.className = 'nav-timer mana-timer hidden';
+                timerElement.textContent = '--:--';
+                mainButton.appendChild(timerElement);
             }
         }
         
@@ -104,6 +133,104 @@ const UI = {
         } else {
             progressIndicator.classList.remove('active');
         }
+        
+        // Also update the research timer
+        this.updateResearchTimer();
+    },
+    
+    // Add new method to update main nav indicator with mana/capacity
+    updateMainNavIndicator(mana, capacity) {
+        const mainButton = document.querySelector('.nav-btn[data-section="main"]');
+        if (!mainButton) return;
+        
+        const progressIndicator = mainButton.querySelector('.nav-progress-indicator');
+        if (!progressIndicator) return;
+        
+        // Calculate percentage of mana capacity
+        const percentage = Math.min(100, (mana / capacity) * 100);
+        
+        // Update width based on progress percentage
+        progressIndicator.style.width = `${percentage}%`;
+        
+        // Add/remove active class for glow effect
+        if (percentage > 0) {
+            progressIndicator.classList.add('active');
+            
+            // Add pulsing effect when mana is nearly full
+            if (percentage > 90) {
+                progressIndicator.classList.add('nearly-full');
+            } else {
+                progressIndicator.classList.remove('nearly-full');
+            }
+        } else {
+            progressIndicator.classList.remove('active');
+            progressIndicator.classList.remove('nearly-full');
+        }
+        
+        // Update the mana fill timer
+        this.updateManaFillTimer(mana, capacity);
+    },
+    
+    // New method to update mana fill timer
+    updateManaFillTimer(mana, capacity) {
+        const timerElement = document.querySelector('.nav-btn[data-section="main"] .nav-timer');
+        if (!timerElement) return;
+        
+        // If mana is already full or there's no passive generation
+        if (mana >= capacity || Game.state.manaPerSecond <= 0) {
+            timerElement.classList.add('hidden');
+            return;
+        }
+        
+        // Calculate time until full in seconds
+        const remainingMana = capacity - mana;
+        const secondsUntilFull = remainingMana / Game.state.manaPerSecond;
+        
+        // Format the time
+        const timeString = this.formatTimerTime(secondsUntilFull);
+        
+        // Update the timer text
+        timerElement.textContent = timeString;
+        timerElement.classList.remove('hidden');
+    },
+    
+    // Update research timer
+    updateResearchTimer() {
+        const timerElement = document.querySelector('.nav-btn[data-section="research"] .nav-timer');
+        if (!timerElement) return;
+        
+        // If no active research
+        if (!Game.state.research || !Game.state.research.activeResearch) {
+            timerElement.classList.add('hidden');
+            return;
+        }
+        
+        // Get remaining time in seconds
+        const remainingTime = Game.state.research.activeResearch.remainingTime;
+        
+        // Format the time
+        const timeString = this.formatTimerTime(remainingTime);
+        
+        // Update the timer text
+        timerElement.textContent = timeString;
+        timerElement.classList.remove('hidden');
+    },
+    
+    // Helper method to format time for timers
+    formatTimerTime(seconds) {
+        if (seconds < 0) return '00:00';
+        
+        // Handle very large times (> 1 hour)
+        if (seconds > 3600) {
+            const hours = Math.floor(seconds / 3600);
+            return `${hours}h+`;
+        }
+        
+        // Format as mm:ss
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        
+        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     },
 
     // Add new handler methods
@@ -339,6 +466,9 @@ const UI = {
         // Update evolution progress
         const evolutionPercentage = (evolutionProgress / evolutionThreshold) * 100;
         this.elements.evolutionBar.style.width = Math.min(100, evolutionPercentage) + '%';
+        
+        // Update the mana progress indicator on the main button
+        this.updateMainNavIndicator(mana, manaCapacity);
         
         // Update stats display
         this.updateStatsDisplay();

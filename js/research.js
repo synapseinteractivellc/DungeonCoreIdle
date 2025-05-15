@@ -533,18 +533,12 @@ const Research = {
                 Game.state.multipliers.evolutionProgress *= effect.value;
                 break;
                 
-            case "unlockFeature":
-                // This will be handled when we implement the features
-                // Just a placeholder for now
-                console.log(`Feature unlocked: ${effect.value}`);
-                break;
-                
             case "unlockEvolution":
                 // This will be handled when we implement evolution
                 // Just a placeholder for now
                 console.log(`Evolution unlocked: ${effect.value}`);
                 break;
-                
+
             case "unlockFeature":
                 // Handle existing feature unlocks
                 console.log(`Feature unlocked: ${effect.value}`);

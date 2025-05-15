@@ -119,7 +119,7 @@ h1 {
 
 .nav-btn {
     position: relative;
-    overflow: hidden;
+    overflow: visible !important;
 }
 
 .nav-progress-indicator {
@@ -136,6 +136,59 @@ h1 {
 /* Optional: Make the indicator glow a bit */
 .nav-progress-indicator.active {
     box-shadow: 0 0 5px var(--accent-color);
+}
+
+/* Specific style for the mana progress indicator */
+.nav-progress-indicator.mana-progress-indicator {
+    background-color: rgba(117, 121, 231, 0.3); /* Mana color with transparency */
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.nav-progress-indicator.mana-progress-indicator.active {
+    box-shadow: 0 0 5px var(--mana-color);
+}
+
+/* When mana is nearly full (90%+), use a pulsing animation */
+@keyframes manaFullPulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.6; }
+}
+
+.nav-progress-indicator.mana-progress-indicator.nearly-full {
+    animation: manaFullPulse 2s infinite;
+    background-color: rgba(117, 121, 231, 0.6); /* Brighter mana color */
+}
+
+/* Countdown Timer Styles for Nav Buttons */
+.nav-timer {
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+    font-size: 0.7rem;
+    font-family: var(--number-font);
+    color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(15, 52, 96, 0.7);
+    padding: 1px 4px;
+    border-radius: 3px;
+    pointer-events: none; /* So it doesn't interfere with button clicks */
+    transition: opacity 0.3s ease;
+    z-index: 2; /* Above the progress indicator */
+}
+
+/* Hide timer when there's no countdown */
+.nav-timer.hidden {
+    opacity: 0;
+}
+
+/* Special style for mana timer */
+.nav-timer.mana-timer {
+    background-color: rgba(117, 121, 231, 0.5);
+}
+
+/* Special style for research timer */
+.nav-timer.research-timer {
+    background-color: rgba(79, 138, 139, 0.5);
 }
 
 /* Game Sections */

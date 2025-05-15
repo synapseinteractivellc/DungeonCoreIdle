@@ -328,7 +328,7 @@ const ResearchUI = {
             this.elements.researchProgressText.textContent = `${Math.floor(progress)}%`;
         }
         
-        // Update the progress indicator on the nav button
+        // Update the progress indicator and timer on the nav button
         UI.updateResearchNavIndicator(progress);
     },
 
