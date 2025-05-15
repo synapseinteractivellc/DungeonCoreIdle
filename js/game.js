@@ -16,6 +16,13 @@ const Game = {
             evolutionProgress: 0,
             evolutionThreshold: 1000000,
             lastSave: Date.now(),
+            
+            // New statistics tracking
+            totalClicks: 0,
+            featuresPurchased: 0,
+            upgradesPurchased: 0,
+            startTime: Date.now(),
+            playTime: 0,
             features: [
                 {
                     id: 'manaVein',
@@ -133,6 +140,9 @@ const Game = {
         this.state.totalMana += this.state.manaPerClick;
         this.state.evolutionProgress += this.state.manaPerClick;
         
+        // Increment click counter
+        this.state.totalClicks++;
+        
         // Check for unlocks based on total mana
         this.checkUnlocks();
         
@@ -153,6 +163,9 @@ const Game = {
             this.state.mana -= cost;
             feature.count++;
             
+            // Increment features purchased counter
+            this.state.featuresPurchased++;
+            
             // Recalculate mana per second
             this.calculateManaPerSecond();
             
@@ -162,7 +175,7 @@ const Game = {
         return false;
     },
 
-    // Purchase an upgrade
+    // Update the purchaseUpgrade() method to track purchases
     purchaseUpgrade(upgradeId) {
         const upgrade = this.state.upgrades.find(u => u.id === upgradeId);
         
@@ -173,6 +186,9 @@ const Game = {
         if (this.state.mana >= cost) {
             this.state.mana -= cost;
             upgrade.count++;
+            
+            // Increment upgrades purchased counter
+            this.state.upgradesPurchased++;
             
             // Update mana per click value
             this.calculateManaPerClick();
@@ -202,6 +218,33 @@ const Game = {
         });
         
         this.state.manaPerClick = manaPerClick;
+    },
+
+    // Add a method to update play time
+    updatePlayTime() {
+        const now = Date.now();
+        this.state.playTime += (now - this.state.lastSave);
+        this.state.lastSave = now;
+    },
+
+    // Add a method to format play time
+    formatPlayTime() {
+        let seconds = Math.floor(this.state.playTime / 1000);
+        let minutes = Math.floor(seconds / 60);
+        let hours = Math.floor(minutes / 60);
+        
+        seconds %= 60;
+        minutes %= 60;
+        
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    },
+
+    // Add a method to calculate average mana per second
+    calculateAvgManaPerSecond() {
+        const playTimeInSeconds = this.state.playTime / 1000;
+        if (playTimeInSeconds <= 0) return 0;
+        
+        return this.state.totalMana / playTimeInSeconds;
     },
 
     checkUnlocks() {

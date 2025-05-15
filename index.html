@@ -16,40 +16,104 @@
     </header>
     
     <div class="game-container">
-        <div class="main-panel">
-            <div class="core-container" id="coreContainer">
-                <div class="core" id="core"></div>
-            </div>
-            
-            <div class="mana-display">
-                Mana: <span id="manaDisplay">0</span>
-            </div>
-            <div class="mana-per-second">
-                Mana per second: <span id="manaPerSecondDisplay">0.0</span>
-            </div>
-            <div class="mana-per-click">
-                Mana per click: <span id="manaPerClickDisplay">1.0</span>
-            </div>
-            
-            <div class="evolution-info">
-                <div>Core Type: <span id="coreTypeDisplay">Stone Core</span></div>
-                <div>Evolution Progress:</div>
-                <div class="evolution-progress">
-                    <div class="evolution-bar" id="evolutionBar"></div>
+        <div class="nav-bar">
+            <button class="nav-btn active" data-section="main">Main</button>
+            <button class="nav-btn" data-section="research">Research</button>
+            <button class="nav-btn" data-section="skills">Skills</button>
+            <button class="nav-btn" data-section="stats">Stats</button>
+        </div>
+        <div class="game-sections">
+            <!-- Main section (current content) -->
+            <div class="game-section active" id="main-section">
+                <div class="main-panel">
+                    <div class="core-container" id="coreContainer">
+                        <div class="core" id="core"></div>
+                    </div>
+                    
+                    <div class="mana-display">
+                        Mana: <span id="manaDisplay">0</span>
+                    </div>
+                    <div class="mana-per-second">
+                        Mana per second: <span id="manaPerSecondDisplay">0.0</span>
+                    </div>
+                    <div class="mana-per-click">
+                        Mana per click: <span id="manaPerClickDisplay">1.0</span>
+                    </div>
+                    
+                    <div class="evolution-info">
+                        <div>Core Type: <span id="coreTypeDisplay">Stone Core</span></div>
+                        <div>Evolution Progress:</div>
+                        <div class="evolution-progress">
+                            <div class="evolution-bar" id="evolutionBar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="side-panel">
+                    <div class="section-title">Core Upgrades</div>
+                    <ul class="feature-list" id="upgradeList">
+                        <!-- Upgrades will be dynamically added here -->
+                    </ul>
+                    
+                    <div class="section-title">Dungeon Features</div>
+                    <ul class="feature-list" id="featureList">
+                        <!-- Features will be dynamically added here -->
+                    </ul>
                 </div>
             </div>
-        </div>
-        
-        <div class="side-panel">
-            <div class="section-title">Core Upgrades</div>
-            <ul class="feature-list" id="upgradeList">
-                <!-- Upgrades will be dynamically added here -->
-            </ul>
             
-            <div class="section-title">Dungeon Features</div>
-            <ul class="feature-list" id="featureList">
-                <!-- Features will be dynamically added here -->
-            </ul>
+            <!-- Research section (placeholder) -->
+            <div class="game-section" id="research-section">
+                <div class="placeholder-content">
+                    <h2>Research System</h2>
+                    <p>Research system is under development. Stay tuned for future updates!</p>
+                    <div class="placeholder-icon">🔍</div>
+                    <p class="coming-soon">Coming Soon</p>
+                </div>
+            </div>
+            
+            <!-- Skills section (placeholder) -->
+            <div class="game-section" id="skills-section">
+                <div class="placeholder-content">
+                    <h2>Skills System</h2>
+                    <p>Skills system is under development. Stay tuned for future updates!</p>
+                    <div class="placeholder-icon">⚔️</div>
+                    <p class="coming-soon">Coming Soon</p>
+                </div>
+            </div>
+            
+            <!-- Stats section -->
+            <div class="game-section" id="stats-section">
+                <div class="stats-container">
+                    <h2>Game Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-name">Lifetime Mana</div>
+                            <div class="stat-value" id="lifetimeManaDisplay">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-name">Total Clicks</div>
+                            <div class="stat-value" id="totalClicksDisplay">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-name">Features Purchased</div>
+                            <div class="stat-value" id="featuresPurchasedDisplay">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-name">Upgrades Purchased</div>
+                            <div class="stat-value" id="upgradesPurchasedDisplay">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-name">Play Time</div>
+                            <div class="stat-value" id="playTimeDisplay">00:00:00</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-name">Avg. Mana per Second</div>
+                            <div class="stat-value" id="avgManaPerSecondDisplay">0.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

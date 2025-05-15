@@ -12,12 +12,24 @@ const UI = {
         evolutionBar: null,
         manaPerClickDisplay: null,
         saveButton: null,
-        wipeButton: null
+        wipeButton: null,
+        
+        // New navigation elements
+        navButtons: null,
+        gameSections: null,
+        
+        // Stats displays
+        lifetimeManaDisplay: null,
+        totalClicksDisplay: null,
+        featuresPurchasedDisplay: null,
+        upgradesPurchasedDisplay: null,
+        playTimeDisplay: null,
+        avgManaPerSecondDisplay: null
     },
 
-    // Initialize UI
+    // Update the init() method to cache the new DOM elements
     init() {
-    // Cache DOM elements
+        // Cache DOM elements (existing)
         this.elements.core = document.getElementById('core');
         this.elements.coreContainer = document.getElementById('coreContainer');
         this.elements.manaDisplay = document.getElementById('manaDisplay');
@@ -30,20 +42,33 @@ const UI = {
         this.elements.saveButton = document.querySelector('.header-buttons-right button:first-child');
         this.elements.wipeButton = document.querySelector('.header-buttons-right button:last-child');
         
+        // Cache new DOM elements
+        this.elements.navButtons = document.querySelectorAll('.nav-btn');
+        this.elements.gameSections = document.querySelectorAll('.game-section');
+        
+        // Cache stats elements
+        this.elements.lifetimeManaDisplay = document.getElementById('lifetimeManaDisplay');
+        this.elements.totalClicksDisplay = document.getElementById('totalClicksDisplay');
+        this.elements.featuresPurchasedDisplay = document.getElementById('featuresPurchasedDisplay');
+        this.elements.upgradesPurchasedDisplay = document.getElementById('upgradesPurchasedDisplay');
+        this.elements.playTimeDisplay = document.getElementById('playTimeDisplay');
+        this.elements.avgManaPerSecondDisplay = document.getElementById('avgManaPerSecondDisplay');
+        
         // Set up event listeners
         this.setupEventListeners();
     },
 
-    // Add to the setupEventListeners function
+    // Update the setupEventListeners method to handle navigation
     setupEventListeners() {
-        // Core click event
+        // Existing event listeners
         this.elements.core.addEventListener('click', this.handleCoreClick.bind(this));
-        
-        // Save button event
         this.elements.saveButton.addEventListener('click', this.handleSaveGame.bind(this));
-        
-        // Wipe button event
         this.elements.wipeButton.addEventListener('click', this.handleWipeGame.bind(this));
+        
+        // Add navigation event listeners
+        this.elements.navButtons.forEach(button => {
+            button.addEventListener('click', this.handleNavigation.bind(this));
+        });
     },
 
     // Add new handler methods
@@ -56,6 +81,22 @@ const UI = {
         if (confirm('Are you sure you want to wipe all save data? This cannot be undone.')) {
             Game.resetGame();
         }
+    },
+
+    handleNavigation(event) {
+        const sectionId = event.target.dataset.section;
+        
+        // Update active button
+        this.elements.navButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Update active section
+        this.elements.gameSections.forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(`${sectionId}-section`).classList.add('active');
     },
 
     // Add a notification method
@@ -190,7 +231,29 @@ const UI = {
         });
     },
 
-    // Update all displays
+    updateStatsDisplay() {
+        // Update lifetime mana
+        this.elements.lifetimeManaDisplay.textContent = this.formatNumber(Game.state.totalMana);
+        
+        // Update total clicks
+        this.elements.totalClicksDisplay.textContent = Game.state.totalClicks.toLocaleString();
+        
+        // Update features purchased
+        this.elements.featuresPurchasedDisplay.textContent = Game.state.featuresPurchased.toLocaleString();
+        
+        // Update upgrades purchased
+        this.elements.upgradesPurchasedDisplay.textContent = Game.state.upgradesPurchased.toLocaleString();
+        
+        // Update play time
+        Game.updatePlayTime();
+        this.elements.playTimeDisplay.textContent = Game.formatPlayTime();
+        
+        // Update average mana per second
+        const avgManaPerSecond = Game.calculateAvgManaPerSecond();
+        this.elements.avgManaPerSecondDisplay.textContent = this.formatNumber(avgManaPerSecond);
+    },
+
+    // Update the updateDisplay method to also update stats
     updateDisplay() {
         const { mana, manaPerSecond, manaPerClick, coreType, evolutionProgress, evolutionThreshold } = Game.state;
         
@@ -209,6 +272,9 @@ const UI = {
         // Update evolution progress
         const evolutionPercentage = (evolutionProgress / evolutionThreshold) * 100;
         this.elements.evolutionBar.style.width = Math.min(100, evolutionPercentage) + '%';
+        
+        // Update stats display
+        this.updateStatsDisplay();
     }
 };
 
