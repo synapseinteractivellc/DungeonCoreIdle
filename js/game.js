@@ -379,10 +379,12 @@ const Game = {
         // Check for unlocks and evolution
         const newUnlocks = this.checkUnlocks();
         const canEvolve = this.checkEvolution();
+        const checkAffordability = this.checkAffordability();
         
         return { 
             newUnlocks,
-            canEvolve
+            canEvolve,
+            checkAffordability
         };
     },
 
