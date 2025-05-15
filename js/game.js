@@ -9,6 +9,7 @@ const Game = {
         return {
             mana: 0,
             totalMana: 0,
+            manaCapacity: 100,
             manaPerClick: 1,
             manaPerSecond: 0,
             coreLevel: 1,
@@ -64,7 +65,40 @@ const Game = {
             ],
             upgrades: [
                 {
+                    id: 'manaCapacityI',
+                    type: 'storage',
+                    name: 'Expanded Mana Channels',
+                    description: 'Increase your core\'s ability to store mana.',
+                    baseCost: 75,
+                    effect: 100,  // Adds +100 to manaCapacity
+                    count: 0,
+                    unlocked: true
+                },
+                {
+                    id: 'manaCapacityII',
+                    type: 'storage',
+                    name: 'Mana Compression',
+                    description: 'Learn to compress mana, vastly increasing storage.',
+                    baseCost: 750,
+                    effect: 500,  // Adds +500 to manaCapacity
+                    count: 0,
+                    unlocked: false,
+                    unlockAt: 500
+                },
+                {
+                    id: 'manaCapacityIII',
+                    type: 'storage',
+                    name: 'Dimensional Mana Pocket',
+                    description: 'Create a small pocket dimension to store excess mana.',
+                    baseCost: 5000,
+                    effect: 2500,  // Adds +2500 to manaCapacity
+                    count: 0,
+                    unlocked: false,
+                    unlockAt: 2000
+                },
+                {
                     id: 'coreEnhancement',
+                    type: 'click',
                     name: 'Core Enhancement',
                     description: 'Strengthen your core to absorb more mana with each click.',
                     baseCost: 25,
@@ -74,6 +108,7 @@ const Game = {
                 },
                 {
                     id: 'manaResonance',
+                    type: 'click',
                     name: 'Mana Resonance',
                     description: 'Tune your core to resonate with ambient mana, increasing click effectiveness.',
                     baseCost: 100,
@@ -84,6 +119,7 @@ const Game = {
                 },
                 {
                     id: 'coreExpansion',
+                    type: 'click',
                     name: 'Core Expansion',
                     description: 'Expand your core\'s mana absorption surface area.',
                     baseCost: 500,
@@ -136,7 +172,7 @@ const Game = {
 
     // Game mechanics
     clickCore() {
-        this.state.mana += this.state.manaPerClick;
+        this.state.mana = Math.min(this.state.mana + this.state.manaPerClick, this.state.manaCapacity);
         this.state.totalMana += this.state.manaPerClick;
         this.state.evolutionProgress += this.state.manaPerClick;
         
@@ -190,8 +226,14 @@ const Game = {
             // Increment upgrades purchased counter
             this.state.upgradesPurchased++;
             
-            // Update mana per click value
-            this.calculateManaPerClick();
+            if (upgrade.type.includes('click')) {
+                // Update mana per click value
+                this.calculateManaPerClick();
+            }
+
+            if (upgrade.type.includes('storage')) {
+                this.state.manaCapacity += upgrade.effect;
+            }
             
             return true;
         }
@@ -214,10 +256,27 @@ const Game = {
         
         // Add effects from all upgrades
         this.state.upgrades.forEach(upgrade => {
-            manaPerClick += upgrade.effect * upgrade.count;
+            if (upgrade.type.includes('click')) {
+                manaPerClick += upgrade.effect * upgrade.count;
+            }            
         });
         
         this.state.manaPerClick = manaPerClick;
+    },
+
+    // Calculate mana storage
+    calculateManaCapacity() {
+        // start with base of 100
+        let manaCapacity = 100;
+
+        // Add effects from all upgrades
+        this.state.upgrades.forEach(upgrade => {
+            if (upgrade.type.includes('storage')) {
+                manaCapacity += upgrade.effect * upgrade.count;
+            }
+        });
+
+        this.state.manaCapacity = manaCapacity;
     },
 
     // Add a method to update play time
@@ -283,7 +342,7 @@ const Game = {
         // Calculate mana gain for this tick (in seconds)
         const manaGain = (this.state.manaPerSecond * deltaTime) / 1000;
         
-        this.state.mana += manaGain;
+        this.state.mana = Math.min(this.state.mana + manaGain, this.state.manaCapacity);
         this.state.totalMana += manaGain;
         this.state.evolutionProgress += manaGain;
         
