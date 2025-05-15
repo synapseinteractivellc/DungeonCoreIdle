@@ -351,6 +351,10 @@ const Game = {
         return false;
     },
 
+    checkAffordability() {
+        // Determine if a feature or upgrade is affordable now that wasn't affordable last check
+    },
+
     // Game loop - process idle gains
     processTick(deltaTime) {
         // Calculate mana gain for this tick (in seconds)
