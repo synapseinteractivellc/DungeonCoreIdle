@@ -347,6 +347,31 @@ const Game = {
         return true;
     },
 
+    sellFeature (featureId) {
+        const feature = this.state.features.find(f => f.id === featureId);
+        
+        if (!feature || feature.count <= 0) return false;
+        
+        // Calculate sell value (typically 50% of purchase cost)
+        const currentCost = this.calculateFeatureCost(feature);
+        const sellValue = Math.floor(currentCost * 0.5); // 50% refund
+        
+        // Update feature count and dungeon size
+        feature.count--;
+        this.state.dungeonSize -= feature.size;
+        
+        // Add mana from selling
+        this.state.mana = Math.min(this.state.mana + sellValue, this.state.manaCapacity);
+        
+        // Recalculate mana per second
+        this.calculateManaPerSecond();
+        
+        return {
+            soldFeature: feature.name,
+            refundAmount: sellValue
+        };
+    },
+
     // Update the purchaseUpgrade() method to track purchases
     purchaseUpgrade(upgradeId) {
         const upgrade = this.state.upgrades.find(u => u.id === upgradeId);

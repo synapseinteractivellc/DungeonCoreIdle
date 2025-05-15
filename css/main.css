@@ -206,6 +206,7 @@ h1 {
 
 .game-section.active {
     display: flex;
+    height: calc(100vh - 200px); /* Adjust height to fit screen minus header and nav */
 }
 
 .main-panel {
@@ -213,8 +214,10 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Change from center to flex-start */
     padding: 1rem;
+    overflow-y: auto; /* Add scrolling to main panel if needed */
+    height: calc(100vh - 200px); /* Set a fixed height to enable scrolling */
 }
 
 .side-panel {
@@ -226,7 +229,8 @@ h1 {
     display: flex;
     flex-direction: column;
     min-width: 240px;
-    overflow-y: scroll;
+    max-height: calc(100vh - 200px); /* Match main panel height */
+    overflow-y: auto; /* Changed from scroll to auto */
 }
 
 .core-container {
@@ -236,6 +240,7 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 2rem; /* Add top margin */
     margin-bottom: 2rem;
 }
 
@@ -328,8 +333,18 @@ h1 {
     margin-bottom: 0.5rem;
     padding: 0.7rem;
     border-radius: 4px;
-    cursor: pointer;
+    cursor: default; /* Changed from pointer since we now have buttons */
     transition: background-color 0.2s;
+}
+
+.feature-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.feature-info {
+    margin-bottom: 0.5rem;
 }
 
 .feature-item.cant-fit {
@@ -367,6 +382,45 @@ h1 {
     float: right;
     color: #d0d0ff;
     font-family: var(--number-font);
+}
+
+/* Button container for buy/sell buttons */
+.feature-buttons {
+    display: flex;
+    flex-direction: row; /* Changed to row for horizontal layout */
+    gap: 0.3rem;
+    justify-content: flex-end; /* Align to right */
+    margin-top: 0.3rem; /* Small gap from the feature info */
+}
+
+/* Style for buy and sell buttons */
+.feature-buy-button, .feature-sell-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 0.2rem 0.5rem;
+    font-family: var(--body-font);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    min-width: 3rem;
+}
+
+.feature-buy-button:hover:not(:disabled), .feature-sell-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.feature-buy-button:disabled, .feature-sell-button:disabled {
+    background-color: #546a7b;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Style specifically for sell button */
+.feature-sell-button {
+    background-color: #e63946; /* Red color for selling */
 }
 
 footer {

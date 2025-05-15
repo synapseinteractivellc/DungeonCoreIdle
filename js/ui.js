@@ -331,6 +331,16 @@ const UI = {
         }, 1500);
     },
 
+    handleSellFeature (featureId) {
+        const result = Game.sellFeature(featureId);
+        
+        if (result) {
+            this.showNotification(`Sold ${result.soldFeature} for ${this.formatNumber(result.refundAmount)} mana`);
+            this.updateDisplay();
+            this.renderFeatures();
+        }
+    },
+
     // Render the features list
     renderFeatures() {
         const featureList = this.elements.featureList;
@@ -357,7 +367,15 @@ const UI = {
             
             li.dataset.featureId = feature.id;
             
-            li.innerHTML = `
+            // Create a container for feature info and buttons
+            const featureContent = document.createElement('div');
+            featureContent.className = 'feature-content';
+            
+            // Create a div for feature info
+            const featureInfo = document.createElement('div');
+            featureInfo.className = 'feature-info';
+            
+            featureInfo.innerHTML = `
                 <div class="feature-name">${feature.name} <span class="feature-count">${feature.count}</span></div>
                 <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                 <div class="feature-effect">+${this.formatNumber(feature.baseEffect)} mana/sec each</div>
@@ -365,19 +383,46 @@ const UI = {
                 ${!hasSpace ? `<div class="size-warning">Not enough space (need ${feature.size} tiles)</div>` : ''}
             `;
             
-            // Add click handler
-            li.addEventListener('click', () => {
-                if (!hasSpace) {
-                    UI.showNotification(`Not enough dungeon space! Need ${feature.size} free tiles.`);
-                    return;
-                }
-                
+            // Create button container
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'feature-buttons';
+            
+            // Add sell button (only visible if feature count > 0)
+            const sellButton = document.createElement('button');
+            sellButton.className = 'feature-sell-button';
+            sellButton.textContent = 'Sell';
+            sellButton.disabled = feature.count <= 0;
+            
+            sellButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent the li click handler from firing
+                this.handleSellFeature(feature.id);
+            });
+            
+            // Add buy button
+            const buyButton = document.createElement('button');
+            buyButton.className = 'feature-buy-button';
+            buyButton.textContent = 'Buy';
+            buyButton.disabled = !canAfford || !hasSpace;
+            
+            buyButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent the li click handler from firing
                 const success = Game.purchaseFeature(feature.id);
                 if (success) {
                     this.updateDisplay();
                     this.renderFeatures();
                 }
             });
+            
+            // Add buttons to container (sell first, then buy)
+            buttonContainer.appendChild(sellButton);
+            buttonContainer.appendChild(buyButton);
+            
+            // Add content and buttons to the list item
+            featureContent.appendChild(featureInfo);
+            featureContent.appendChild(buttonContainer);
+            li.appendChild(featureContent);
+            
+            // Remove the old click handler from li since we now have buttons
             
             featureList.appendChild(li);
         });
