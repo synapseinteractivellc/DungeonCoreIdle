@@ -275,6 +275,14 @@ h1 {
     margin-bottom: 1rem;
 }
 
+.dungeon-info {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: rgba(15, 52, 96, 0.5);
+    border-radius: 8px;
+}
+
 .section-title {
     border-bottom: 1px solid var(--accent-color);
     padding-bottom: 0.5rem;
@@ -282,46 +290,6 @@ h1 {
     font-size: 1.2rem;
     font-family: var(--title-font);
     font-weight: 600;
-}
-
-.feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem 0;
-}
-
-.feature-item {
-    background-color: var(--button-color);
-    margin-bottom: 0.5rem;
-    padding: 0.7rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.feature-item:hover {
-    background-color: var(--button-hover);
-}
-
-.feature-name {
-    font-weight: normal;
-    letter-spacing: 0.5px;
-}
-
-.feature-cost {
-    font-size: 0.8rem;
-    color: #a0a0d0;
-}
-
-.feature-effect {
-    font-size: 0.8rem;
-    color: #8aff8a;
-}
-
-.feature-count {
-    float: right;
-    color: #d0d0ff;
-    font-family: var(--number-font);
 }
 
 .evolution-info {
@@ -347,6 +315,58 @@ h1 {
     width: 5%; /* Initial width */
     border-radius: 5px;
     transition: width 0.5s;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.feature-item {
+    background-color: var(--button-color);
+    margin-bottom: 0.5rem;
+    padding: 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.feature-item.cant-fit {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-left: 3px solid #e63946; /* Red indicator */
+}
+
+.feature-item .size-warning {
+    color: #e63946;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.feature-item:hover {
+    background-color: var(--button-hover);
+}
+
+.feature-name {
+    font-weight: normal;
+    letter-spacing: 0.5px;
+}
+
+.feature-cost {
+    font-size: 0.8rem;
+    color: #a0a0d0;
+}
+
+.feature-effect {
+    font-size: 0.8rem;
+    color: #8aff8a;
+}
+
+.feature-count {
+    float: right;
+    color: #d0d0ff;
+    font-family: var(--number-font);
 }
 
 footer {

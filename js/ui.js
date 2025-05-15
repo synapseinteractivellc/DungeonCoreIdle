@@ -8,10 +8,13 @@ const UI = {
         manaCapacityDisplay: null,
         manaPerSecondDisplay: null,
         manaPerClickDisplay: null,
-        featureList: null,
-        upgradeList: null,
+        dungeonSizeDisplay: null,
+        maxDungeonSizeDisplay: null,
+        availableSpaceDisplay: null,
         coreTypeDisplay: null,
         evolutionBar: null,
+        featureList: null,
+        upgradeList: null,
         saveButton: null,
         wipeButton: null,
         
@@ -39,12 +42,15 @@ const UI = {
         this.elements.manaCapacityDisplay = document.getElementById('manaCapacityDisplay');
         this.elements.manaPerSecondDisplay = document.getElementById('manaPerSecondDisplay');
         this.elements.manaPerClickDisplay = document.getElementById('manaPerClickDisplay');
-        this.elements.featureList = document.getElementById('featureList');
-        this.elements.upgradeList = document.getElementById('upgradeList');
+        this.elements.dungeonSizeDisplay = document.getElementById('dungeonSizeDisplay');
+        this.elements.maxDungeonSizeDisplay = document.getElementById('maxDungeonSizeDisplay');
+        this.elements.availableSpaceDisplay = document.getElementById('availableSpaceDisplay');
         this.elements.coreTypeDisplay = document.getElementById('coreTypeDisplay');
         this.elements.evolutionBar = document.getElementById('evolutionBar');
         this.elements.saveButton = document.querySelector('.header-buttons-right button:first-child');
         this.elements.wipeButton = document.querySelector('.header-buttons-right button:last-child');
+        this.elements.featureList = document.getElementById('featureList');
+        this.elements.upgradeList = document.getElementById('upgradeList');
         
         // Cache new DOM elements
         this.elements.navButtons = document.querySelectorAll('.nav-btn');
@@ -335,20 +341,37 @@ const UI = {
             
             const cost = Game.calculateFeatureCost(feature);
             const canAfford = Game.state.mana >= cost;
+            const hasSpace = (Game.state.dungeonSize + feature.size) <= Game.state.maxDungeonSize;
             
             const li = document.createElement('li');
             li.className = 'feature-item';
-            li.style.opacity = canAfford ? '1' : '0.6';
+            
+            // Add styles for affordability and space constraints
+            if (!canAfford) {
+                li.style.opacity = '0.6';
+            }
+            
+            if (!hasSpace) {
+                li.classList.add('cant-fit');
+            }
+            
             li.dataset.featureId = feature.id;
             
             li.innerHTML = `
                 <div class="feature-name">${feature.name} <span class="feature-count">${feature.count}</span></div>
                 <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                 <div class="feature-effect">+${this.formatNumber(feature.baseEffect)} mana/sec each</div>
+                <div class="feature-size">Size: ${feature.size} ${feature.size > 1 ? 'tiles' : 'tile'}</div>
+                ${!hasSpace ? `<div class="size-warning">Not enough space (need ${feature.size} tiles)</div>` : ''}
             `;
             
             // Add click handler
             li.addEventListener('click', () => {
+                if (!hasSpace) {
+                    UI.showNotification(`Not enough dungeon space! Need ${feature.size} free tiles.`);
+                    return;
+                }
+                
                 const success = Game.purchaseFeature(feature.id);
                 if (success) {
                     this.updateDisplay();
@@ -399,6 +422,13 @@ const UI = {
                     <div class="feature-name">${upgrade.name} <span class="feature-count" style="color: ${statusColor}">${status}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                     <div class="feature-effect">${upgrade.description}</div>
+                `;
+            } else if (upgrade.type === 'expansion') {
+                li.innerHTML = `
+                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                    <div class="feature-effect">+${upgrade.effect} dungeon size</div>
+                    <div class="feature-effect">Current space: ${Game.state.dungeonSize}/${Game.state.maxDungeonSize}</div>
                 `;
             }
             
@@ -458,6 +488,13 @@ const UI = {
         // Update mana per click display if the element exists
         if (this.elements.manaPerClickDisplay) {
             this.elements.manaPerClickDisplay.textContent = this.formatNumber(manaPerClick);
+        }
+
+        // Update dungeon size display
+        if (this.elements.dungeonSizeDisplay && this.elements.maxDungeonSizeDisplay && this.elements.availableSpaceDisplay) {
+            this.elements.dungeonSizeDisplay.textContent = Game.state.dungeonSize;
+            this.elements.maxDungeonSizeDisplay.textContent = Game.state.maxDungeonSize;
+            this.elements.availableSpaceDisplay.textContent = Game.state.maxDungeonSize - Game.state.dungeonSize;
         }
         
         // Update core type display

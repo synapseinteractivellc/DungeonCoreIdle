@@ -13,6 +13,8 @@ const Game = {
             totalManaLost: 0,
             manaPerClick: 1,
             manaPerSecond: 0,
+            dungeonSize: 0,           // Current used space in the dungeon
+            maxDungeonSize: 5,        // Max available space in the dungeon
             coreLevel: 1,
             coreType: 'Stone Core',
             evolutionProgress: 0,
@@ -44,6 +46,7 @@ const Game = {
                     baseCost: 10,
                     baseEffect: 0.1,
                     count: 0,
+                    size: 1, 
                     unlocked: true,
                     affordable: false
                 },
@@ -55,6 +58,7 @@ const Game = {
                     baseCost: 50,
                     baseEffect: 0.5,
                     count: 0,
+                    size: 1, 
                     unlocked: false,
                     unlockAt: 100, // Total mana required to unlock
                     affordable: false
@@ -67,6 +71,7 @@ const Game = {
                     baseCost: 200,
                     baseEffect: 2,
                     count: 0,
+                    size: 2, 
                     unlocked: false,
                     unlockAt: 500, // Total mana required to unlock
                     affordable: false
@@ -79,12 +84,50 @@ const Game = {
                     baseCost: 500,
                     baseEffect: 5,
                     count: 0,
+                    size: 2, 
                     unlocked: false,
                     unlockAt: 1000, // Total mana required to unlock
+                    affordable: false
+                },
+                {
+                    id: 'essenceConduit',
+                    type: 'passive',
+                    name: 'Essence Conduit',
+                    description: 'A crystalline structure that channels ambient mana from the surrounding area directly into your core.',
+                    baseCost: 2000,
+                    baseEffect: 10,
+                    count: 0,
+                    size: 3, 
+                    unlocked: false,
+                    unlockAt: 5000, // Total mana required to unlock
+                    affordable: false
+                },
+                {
+                    id: 'manaNexus',
+                    type: 'passive',
+                    name: 'Mana Nexus',
+                    description: 'A powerful convergence point where ley lines intersect, creating a vortex that draws in magical energy.',
+                    baseCost: 10000,
+                    baseEffect: 25,
+                    count: 0,
+                    size: 4, 
+                    unlocked: false,
+                    unlockAt: 20000, // Total mana required to unlock
                     affordable: false
                 }
             ],
             upgrades: [
+                {
+                    id: 'dungeonExpansion',
+                    type: 'expansion',
+                    name: 'Dungeon Expansion',
+                    description: 'Expand your dungeon\'s capacity, allowing more features to be placed.',
+                    baseCost: 100,
+                    effect: 1,  // Each purchase adds 1 to maxDungeonSize
+                    count: 0,
+                    unlocked: true,
+                    affordable: false
+                },
                 {
                     id: 'manaCapacityI',
                     type: 'storage',
@@ -279,20 +322,29 @@ const Game = {
         
         const cost = this.calculateFeatureCost(feature);
         
-        if (this.state.mana >= cost) {
-            this.state.mana -= cost;
-            feature.count++;
-            
-            // Increment features purchased counter
-            this.state.featuresPurchased++;
-            
-            // Recalculate mana per second
-            this.calculateManaPerSecond();
-            
-            return true;
+        // Check if we can afford it
+        if (this.state.mana < cost) return false;
+        
+        // Check if we have enough dungeon space
+        if (this.state.dungeonSize + feature.size > this.state.maxDungeonSize) {
+            UI.showNotification('Not enough dungeon space!');
+            return false;
         }
         
-        return false;
+        // If we have enough mana and space, purchase the feature
+        this.state.mana -= cost;
+        feature.count++;
+        
+        // Update dungeon size
+        this.state.dungeonSize += feature.size;
+        
+        // Increment features purchased counter
+        this.state.featuresPurchased++;
+        
+        // Recalculate mana per second
+        this.calculateManaPerSecond();
+        
+        return true;
     },
 
     // Update the purchaseUpgrade() method to track purchases
@@ -314,6 +366,10 @@ const Game = {
                 this.calculateManaPerClick();
             } else if (upgrade.type === 'storage') {
                 this.calculateManaCapacity();
+            } else if (upgrade.type === 'expansion') {
+                // Update max dungeon size for expansion upgrades
+                this.state.maxDungeonSize += upgrade.effect;
+                UI.showNotification(`Dungeon expanded to ${this.state.maxDungeonSize} tiles!`);
             }
             
             return true;
