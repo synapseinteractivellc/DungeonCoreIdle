@@ -10,6 +10,7 @@ const Game = {
             mana: 0,
             totalMana: 0,
             manaCapacity: 100,
+            totalManaLost: 0,
             manaPerClick: 1,
             manaPerSecond: 0,
             coreLevel: 1,
@@ -27,6 +28,7 @@ const Game = {
             features: [
                 {
                     id: 'manaVein',
+                    type: 'passive',
                     name: 'Mana Vein',
                     description: 'A small crack in the earth that leaks mana.',
                     baseCost: 10,
@@ -36,6 +38,7 @@ const Game = {
                 },
                 {
                     id: 'crystalFormation',
+                    type: 'passive',
                     name: 'Crystal Formation',
                     description: 'Small crystals that attract ambient mana.',
                     baseCost: 50,
@@ -45,6 +48,7 @@ const Game = {
                 },
                 {
                     id: 'manaPool',
+                    type: 'passive',
                     name: 'Mana Pool',
                     description: 'A small pool of liquid mana that slowly generates more mana.',
                     baseCost: 200,
@@ -54,6 +58,7 @@ const Game = {
                 },
                 {
                     id: 'fungalGrowth',
+                    type: 'passive',
                     name: 'Fungal Growth',
                     description: 'Magical fungi that convert organic matter into mana.',
                     baseCost: 500,
@@ -226,13 +231,10 @@ const Game = {
             // Increment upgrades purchased counter
             this.state.upgradesPurchased++;
             
-            if (upgrade.type.includes('click')) {
-                // Update mana per click value
+            if (upgrade.type === 'click') {
                 this.calculateManaPerClick();
-            }
-
-            if (upgrade.type.includes('storage')) {
-                this.state.manaCapacity += upgrade.effect;
+            } else if (upgrade.type === 'storage') {
+                this.calculateManaCapacity();
             }
             
             return true;
@@ -254,9 +256,9 @@ const Game = {
         // Start with base value of 1
         let manaPerClick = 1;
         
-        // Add effects from all upgrades
+        // Add effects from all click upgrades
         this.state.upgrades.forEach(upgrade => {
-            if (upgrade.type.includes('click')) {
+            if (upgrade.type === 'click') {
                 manaPerClick += upgrade.effect * upgrade.count;
             }            
         });
@@ -269,9 +271,9 @@ const Game = {
         // start with base of 100
         let manaCapacity = 100;
 
-        // Add effects from all upgrades
+        // Add effects from all storage upgrades
         this.state.upgrades.forEach(upgrade => {
-            if (upgrade.type.includes('storage')) {
+            if (upgrade.type === 'storage') {
                 manaCapacity += upgrade.effect * upgrade.count;
             }
         });

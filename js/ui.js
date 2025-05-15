@@ -5,12 +5,13 @@ const UI = {
         core: null,
         coreContainer: null,
         manaDisplay: null,
+        manaCapacityDisplay: null,
         manaPerSecondDisplay: null,
+        manaPerClickDisplay: null,
         featureList: null,
         upgradeList: null,
         coreTypeDisplay: null,
         evolutionBar: null,
-        manaPerClickDisplay: null,
         saveButton: null,
         wipeButton: null,
         
@@ -33,6 +34,7 @@ const UI = {
         this.elements.core = document.getElementById('core');
         this.elements.coreContainer = document.getElementById('coreContainer');
         this.elements.manaDisplay = document.getElementById('manaDisplay');
+        this.elements.manaCapacityDisplay = document.getElementById('manaCapacityDisplay');
         this.elements.manaPerSecondDisplay = document.getElementById('manaPerSecondDisplay');
         this.elements.manaPerClickDisplay = document.getElementById('manaPerClickDisplay');
         this.elements.featureList = document.getElementById('featureList');
@@ -216,11 +218,21 @@ const UI = {
             li.style.opacity = canAfford ? '1' : '0.6';
             li.dataset.upgradeId = upgrade.id;
             
-            li.innerHTML = `
-                <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
-                <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                <div class="feature-effect">+${upgrade.effect} mana/click each</div>
-            `;
+            if (upgrade.type === 'click') {
+                li.innerHTML = `
+                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                    <div class="feature-effect">+${upgrade.effect} mana/click each</div>
+                `;
+            } else if (upgrade.type === 'storage') {
+                li.innerHTML = `
+                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                    <div class="feature-effect">+${upgrade.effect} mana storage</div>
+                `;
+            }
+
+            
             
             // Add click handler
             li.addEventListener('click', () => {
@@ -259,10 +271,11 @@ const UI = {
 
     // Update the updateDisplay method to also update stats
     updateDisplay() {
-        const { mana, manaPerSecond, manaPerClick, coreType, evolutionProgress, evolutionThreshold } = Game.state;
+        const { mana, manaCapacity, manaPerSecond, manaPerClick, coreType, evolutionProgress, evolutionThreshold } = Game.state;
         
         // Update mana display
         this.elements.manaDisplay.textContent = this.formatNumber(mana);
+        this.elements.manaCapacityDisplay.textContent = this.formatNumber(manaCapacity);
         this.elements.manaPerSecondDisplay.textContent = this.formatNumber(manaPerSecond);
         
         // Update mana per click display if the element exists
