@@ -16,6 +16,9 @@ function initGame() {
     // Initialize Research UI
     ResearchUI.init();
     
+    // Initialize Dungeon system
+    Dungeon.init();  // Add this line
+    
     // Initial render
     UI.updateDisplay();
     UI.renderFeatures();
@@ -26,7 +29,7 @@ function initGame() {
     requestAnimationFrame(gameLoop);
 }
 
-// Main game loop
+// Main game loop modification
 function gameLoop() {
     const now = Date.now();
     const deltaTime = now - lastTick;
@@ -41,6 +44,11 @@ function gameLoop() {
     if (tickResult.newUnlocks || tickResult.needsUIUpdate) {
         UI.renderFeatures();
         UI.renderUpgrades();
+        
+        // Update dungeon display when features change
+        if (window.Dungeon) {
+            Dungeon.updateDungeonDisplay();
+        }
     }
     
     // Update research UI if research completed

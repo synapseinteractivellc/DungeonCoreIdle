@@ -1,0 +1,130 @@
+/* css/dungeon.css */
+
+.dungeon-grid-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  background-color: var(--panel-color);
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.dungeon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 120px);
+  grid-template-rows: repeat(3, 120px);
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+
+.dungeon-cell {
+  background-color: #0f3460;
+  border: 2px solid #4f8a8b30;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  flex-direction: column;
+}
+
+.dungeon-cell:nth-child(1) { grid-column: 2; grid-row: 1; }
+.dungeon-cell:nth-child(2) { grid-column: 1; grid-row: 2; }
+.dungeon-cell:nth-child(3) { grid-column: 2; grid-row: 2; }
+.dungeon-cell:nth-child(4) { grid-column: 3; grid-row: 2; }
+.dungeon-cell:nth-child(5) { grid-column: 2; grid-row: 3; }
+
+.dungeon-core-cell {
+  background-color: #16213e;
+  border: 2px solid #7579e7;
+  box-shadow: 0 0 15px rgba(117, 121, 231, 0.5);
+}
+
+.dungeon-core-icon {
+  font-size: 3rem;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.dungeon-controls {
+  background-color: rgba(15, 52, 96, 0.5);
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+}
+
+.dungeon-controls h3 {
+  font-family: var(--title-font);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--accent-color);
+  padding-bottom: 0.5rem;
+  text-align: center;
+}
+
+.dungeon-controls p {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-family: var(--number-font);
+}
+
+.dungeon-feature-list {
+  background-color: #16213e;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.dungeon-feature-list h4 {
+  font-family: var(--title-font);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: var(--accent-color);
+}
+
+.dungeon-cell:hover:not(.dungeon-core-cell):not(.occupied-cell) {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+  cursor: pointer;
+}
+
+.dungeon-feature-item {
+  background-color: var(--button-color);
+  margin-bottom: 0.5rem;
+  padding: 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dungeon-feature-item:hover {
+  background-color: var(--button-hover);
+}
+
+.occupied-cell {
+  background-color: #195190;
+  position: relative;
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 0.3rem;
+}
+
+.feature-name {
+  position: absolute;
+  bottom: 5px;
+  font-size: 0.8rem;
+  text-align: center;
+  width: 100%;
+}
