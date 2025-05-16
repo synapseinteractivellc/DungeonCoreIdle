@@ -47,7 +47,8 @@ const Game = {
                     baseEffect: 0.1,
                     count: 0,
                     size: 1, 
-                    unlocked: true,
+                    unlocked: false,                    
+                    unlockAt: 100,
                     affordable: false
                 },
                 {
@@ -60,7 +61,7 @@ const Game = {
                     count: 0,
                     size: 1, 
                     unlocked: false,
-                    unlockAt: 100, // Total mana required to unlock
+                    unlockAt: 500, // Total mana required to unlock
                     affordable: false
                 },
                 {
