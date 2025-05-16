@@ -4,7 +4,7 @@ const Dungeon = {
     gridState: [],
     expansionCost: 100, // Base cost for expansion
     costMultiplier: 1.5, // Cost increases by this multiplier
-    gridSize: 15, // Expanded to 15x15 grid
+    gridSize: 15, // 15x15 grid
     
     // Initialize the dungeon system
     init() {        
@@ -41,9 +41,10 @@ const Dungeon = {
         // Create a 15x15 grid with all cells locked by default
         this.gridState = Array(this.gridSize).fill().map(() => Array(this.gridSize).fill('locked'));
         
-        // Set the center cell (7,7) as the core - starting with size 1
-        const centerPos = Math.floor(this.gridSize / 2);
-        this.gridState[centerPos][centerPos] = 'core';
+        // Set the core at the left center of the grid (row: center, column: 0)
+        const centerRow = Math.floor(this.gridSize / 2);
+        const coreCol = 0; // Left side of the grid
+        this.gridState[centerRow][coreCol] = 'core';
         
         // If max dungeon size is greater than 1 (the core), unlock additional cells
         if (Game.state.maxDungeonSize > 1) {
@@ -63,52 +64,75 @@ const Dungeon = {
         Game.state.dungeonGrid = this.gridState;
     },
     
-    // Get cells to unlock in a spiral pattern starting from center
+    // Get cells to unlock starting from the left center and expanding to the right
     getCellsToUnlock(count) {
-        const centerPos = Math.floor(this.gridSize / 2);
+        const centerRow = Math.floor(this.gridSize / 2);
+        const coreCol = 0; // Left side core position
         const cells = [];
         
-        // Add cells in a spiral pattern
-        // Start with the 4 adjacent cells to the core
+        // Start with the 3 adjacent cells to the core (right, top, bottom)
         const initialAdjacent = [
-            [centerPos-1, centerPos], // Top
-            [centerPos, centerPos+1], // Right
-            [centerPos+1, centerPos], // Bottom
-            [centerPos, centerPos-1]  // Left
+            [centerRow, coreCol+1],     // Right
+            [centerRow-1, coreCol],     // Top
+            [centerRow+1, coreCol],     // Bottom
+            [centerRow-1, coreCol+1],   // Top-Right
+            [centerRow+1, coreCol+1]    // Bottom-Right
         ];
         
         for (let i = 0; i < initialAdjacent.length && cells.length < count; i++) {
             cells.push(initialAdjacent[i]);
         }
         
-        // If we need more cells, add the diagonals
-        const diagonals = [
-            [centerPos-1, centerPos-1], // Top-left
-            [centerPos-1, centerPos+1], // Top-right
-            [centerPos+1, centerPos+1], // Bottom-right
-            [centerPos+1, centerPos-1]  // Bottom-left
-        ];
-        
-        for (let i = 0; i < diagonals.length && cells.length < count; i++) {
-            cells.push(diagonals[i]);
+        // If we need more cells, expand primarily to the right in a pattern
+        // First, add another row of cells to the right of the existing ones
+        if (cells.length < count) {
+            const secondLayerRight = [
+                [centerRow-2, coreCol],     // Two cells up
+                [centerRow-2, coreCol+1],   // Up and right
+                [centerRow-1, coreCol+2],   // Top-right corner extension
+                [centerRow, coreCol+2],     // Two cells right
+                [centerRow+1, coreCol+2],   // Bottom-right corner extension
+                [centerRow+2, coreCol+1],   // Down and right
+                [centerRow+2, coreCol]      // Two cells down
+            ];
+            
+            for (let i = 0; i < secondLayerRight.length && cells.length < count; i++) {
+                cells.push(secondLayerRight[i]);
+            }
         }
         
-        // If we need even more, add cells in expanding rings
-        let ring = 2; // Start with cells 2 away from center
-        while (cells.length < count && ring < this.gridSize / 2) {
-            // Add top and bottom rows of this ring
-            for (let col = centerPos - ring; col <= centerPos + ring && cells.length < count; col++) {
-                cells.push([centerPos - ring, col]); // Top row
-                cells.push([centerPos + ring, col]); // Bottom row
+        // For even more cells, continue expanding eastward and outward in a roughly balanced pattern
+        if (cells.length < count) {
+            // Start with expanding to the third column
+            for (let row = centerRow-2; row <= centerRow+2 && cells.length < count; row++) {
+                cells.push([row, coreCol+3]); // Third column to the right
             }
             
-            // Add left and right columns of this ring (excluding corners already added)
-            for (let row = centerPos - ring + 1; row <= centerPos + ring - 1 && cells.length < count; row++) {
-                cells.push([row, centerPos - ring]); // Left column
-                cells.push([row, centerPos + ring]); // Right column
+            // Then add more cells in expanding layers
+            let layer = 3;
+            while (cells.length < count && layer < this.gridSize) {
+                // Expand vertically at the current layer
+                for (let offset = -layer; offset <= layer && cells.length < count; offset++) {
+                    const row = centerRow + offset;
+                    // Make sure we're within grid bounds
+                    if (row >= 0 && row < this.gridSize) {
+                        for (let col = 0; col <= layer && cells.length < count; col++) {
+                            // Skip cells we've already added
+                            const cell = [row, col];
+                            const alreadyExists = cells.some(([r, c]) => r === row && c === col);
+                            
+                            // Skip the core cell and already added cells
+                            if ((row === centerRow && col === coreCol) || alreadyExists) {
+                                continue;
+                            }
+                            
+                            cells.push(cell);
+                        }
+                    }
+                }
+                
+                layer++;
             }
-            
-            ring++;
         }
         
         return cells.slice(0, count);
@@ -172,7 +196,7 @@ const Dungeon = {
             dungeonSection.innerHTML = `
                 <div class="dungeon-grid-container">
                   <h2>Dungeon Expansion</h2>
-                  <p class="dungeon-description">Expand your dungeon by purchasing adjacent cells. Click on highlighted cells to expand.</p>
+                  <p class="dungeon-description">Expand your dungeon by purchasing adjacent cells. Your core is located at the entrance on the left side. Click on highlighted cells to expand.</p>
                   
                   <div class="dungeon-grid">
                     <!-- Grid will be generated dynamically -->
@@ -227,8 +251,9 @@ const Dungeon = {
         grid.style.gridTemplateColumns = `repeat(${this.gridSize}, 32px)`;
         grid.style.gridTemplateRows = `repeat(${this.gridSize}, 32px)`;
         
-        // Get center position
-        const centerPos = Math.floor(this.gridSize / 2);
+        // Get center row
+        const centerRow = Math.floor(this.gridSize / 2);
+        const coreCol = 0; // Left side
         
         // Create the grid cells
         for (let row = 0; row < this.gridSize; row++) {
@@ -239,7 +264,7 @@ const Dungeon = {
                 cell.dataset.col = col;
                 
                 // Core cell
-                if (row === centerPos && col === centerPos) {
+                if (row === centerRow && col === coreCol) {
                     cell.classList.add('core-cell');
                     cell.innerHTML = '<div class="cell-icon">💎</div>';
                 }

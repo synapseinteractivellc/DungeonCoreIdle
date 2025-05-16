@@ -328,6 +328,113 @@ const Research = {
                         tier: 3
                     }
                 ]
+            },
+            // New research path: Mana Generation
+            manaGeneration: {
+                name: "Mana Generation",
+                description: "Develop methods to passively generate mana through dungeon features.",
+                icon: "⚡",
+                researchProjects: [
+                    {
+                        id: "manaGeneration1",
+                        name: "Dungeon Features",
+                        description: "Learn to create physical features in your dungeon that generate mana passively.",
+                        cost: 100,
+                        researchTime: 90, // 1:30 minutes
+                        effect: {
+                            type: "unlockUIElement",
+                            value: "featuresTab" // Will unlock the features tab in the side panel
+                        },
+                        unlocked: true,
+                        completed: false,
+                        requires: [],
+                        tier: 1
+                    },
+                    {
+                        id: "manaGeneration2",
+                        name: "Enhanced Features",
+                        description: "Improve your understanding of mana-generating features, making them more efficient.",
+                        cost: 500,
+                        researchTime: 180, // 3 minutes
+                        effect: {
+                            type: "featureEfficiencyMultiplier",
+                            value: 1.2 // 20% increase to all feature effects
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["manaGeneration1"],
+                        tier: 2
+                    },
+                    {
+                        id: "manaGeneration3",
+                        name: "Advanced Mana Conduits",
+                        description: "Develop advanced mana conduits that significantly boost passive generation.",
+                        cost: 2000,
+                        researchTime: 300, // 5 minutes
+                        effect: {
+                            type: "featureEfficiencyMultiplier",
+                            value: 1.5 // 50% increase to all feature effects
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["manaGeneration2"],
+                        tier: 3
+                    }
+                ]
+            },
+            
+            // New research path: Mana Bank
+            manaBank: {
+                name: "Mana Bank",
+                description: "Develop methods to store greater amounts of mana within your core.",
+                icon: "💾",
+                researchProjects: [
+                    {
+                        id: "manaBank1",
+                        name: "Mana Storage",
+                        description: "Learn techniques to increase your core's mana storage capacity.",
+                        cost: 100,
+                        researchTime: 90, // 1:30 minutes
+                        effect: {
+                            type: "unlockUIElement",
+                            value: "storageTab" // Will unlock the storage tab in the side panel
+                        },
+                        unlocked: true,
+                        completed: false,
+                        requires: [],
+                        tier: 1
+                    },
+                    {
+                        id: "manaBank2",
+                        name: "Compressed Storage",
+                        description: "Develop methods to compress mana, allowing for greater storage in the same space.",
+                        cost: 500,
+                        researchTime: 180, // 3 minutes
+                        effect: {
+                            type: "manaCapacityMultiplier",
+                            value: 1.3 // 30% increase to mana capacity
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["manaBank1"],
+                        tier: 2
+                    },
+                    {
+                        id: "manaBank3",
+                        name: "Dimensional Storage",
+                        description: "Create a pocket dimension within your core to store vast amounts of mana.",
+                        cost: 2000,
+                        researchTime: 300, // 5 minutes
+                        effect: {
+                            type: "manaCapacityMultiplier",
+                            value: 1.5 // 50% increase to mana capacity
+                        },
+                        unlocked: false,
+                        completed: false,
+                        requires: ["manaBank2"],
+                        tier: 3
+                    }
+                ]
             }
         };
     },
@@ -552,6 +659,35 @@ const Research = {
                     const upgrade = Game.state.upgrades.find(u => u.id === effect.value);
                     if (upgrade) {
                         upgrade.unlocked = true;
+                    }
+                }
+                break;
+            
+            case "unlockUIElement":
+                // Handle UI element unlocks (new case)
+                console.log(`UI Element unlocked: ${effect.value}`);
+                
+                // Update the unlockedContent in Game state
+                if (Game.state.unlockedContent && effect.value in Game.state.unlockedContent) {
+                    Game.state.unlockedContent[effect.value] = true;
+                    
+                    // Apply the UI unlock
+                    Game.applyUIUnlocks(effect.value);
+                    
+                    // Show a notification
+                    if (window.UI) {
+                        let notificationText = "New feature unlocked!";
+                        
+                        // Customize notification based on what was unlocked
+                        if (effect.value === "featuresTab") {
+                            notificationText = "Dungeon Features unlocked! Check the Features tab.";
+                        } else if (effect.value === "storageTab") {
+                            notificationText = "Mana Storage upgrades unlocked! Check the Storage tab.";
+                        } else if (effect.value === "automationTab") {
+                            notificationText = "Automation features unlocked! Check the Automation tab.";
+                        }
+                        
+                        UI.showNotification(notificationText);
                     }
                 }
                 break;

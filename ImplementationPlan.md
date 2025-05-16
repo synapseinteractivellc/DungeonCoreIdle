@@ -39,6 +39,7 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
 - [ ] Add placement restrictions based on dungeon size
 - [X] Implement visualization of dungeon growth
 - [ ] Create an entrance (alter initial core placement, left hand side)
+- [ ] Need a way to move the core
 
 ### Skills System (Week 5-6)
 - [ ] Design skill unlocking mechanism

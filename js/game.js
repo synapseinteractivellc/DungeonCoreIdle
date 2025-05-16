@@ -271,7 +271,7 @@ const Game = {
         
         // Apply any UI unlocks from saved state
         this.applyAllUIUnlocks();
-        
+
         // Initialize the research system
         Research.init();
         
@@ -627,7 +627,7 @@ const Game = {
     checkUIUnlocks() {
         let anyNewUnlocks = false;
         
-        // Unlock Dungeon tab at 100 total mana
+        // Unlock Dungeon nav button at 100  mana
         if (!this.state.unlockedContent.dungeonNav && this.state.mana >= 100) {
             this.state.unlockedContent.dungeonNav = true;
             this.applyUIUnlocks('dungeonNav');
@@ -636,6 +636,18 @@ const Game = {
             // Show a notification
             if (window.UI) {
                 UI.showNotification('Dungeon expansion unlocked!');
+            }
+        }
+
+        // Unlock Research nav button at 500 total mana
+        if (!this.state.unlockedContent.researchNav && this.state.totalMana >= 500) {
+            this.state.unlockedContent.researchNav = true;
+            this.applyUIUnlocks('researchNav');
+            anyNewUnlocks = true;
+            
+            // Show a notification
+            if (window.UI) {
+                UI.showNotification('Dungeon research unlocked!');
             }
         }
         
@@ -660,6 +672,28 @@ const Game = {
                 if (skillsBtn) skillsBtn.classList.add('unlocked');
                 break;
                 
+            // New side panel tab cases
+            case 'featuresTab':
+                const featuresTab = document.querySelector('.tab-btn[data-tab="features"]');
+                const featuresContent = document.getElementById('features-tab');
+                if (featuresTab) featuresTab.style.display = 'block';
+                if (featuresContent) featuresContent.style.display = 'flex';
+                break;
+                
+            case 'storageTab':
+                const storageTab = document.querySelector('.tab-btn[data-tab="storage"]');
+                const storageContent = document.getElementById('storage-tab');
+                if (storageTab) storageTab.style.display = 'block';
+                if (storageContent) storageContent.style.display = 'flex';
+                break;
+                
+            case 'automationTab':
+                const automationTab = document.querySelector('.tab-btn[data-tab="automation"]');
+                const automationContent = document.getElementById('automation-tab');
+                if (automationTab) automationTab.style.display = 'block';
+                if (automationContent) automationContent.style.display = 'flex';
+                break;
+
             // Add cases for other UI elements as needed
         }
     },
@@ -670,6 +704,11 @@ const Game = {
         if (this.state.unlockedContent.dungeonNav) this.applyUIUnlocks('dungeonNav');
         if (this.state.unlockedContent.researchNav) this.applyUIUnlocks('researchNav');
         if (this.state.unlockedContent.skillsNav) this.applyUIUnlocks('skillsNav');
+
+        // Side panel tabs
+        if (this.state.unlockedContent.featuresTab) this.applyUIUnlocks('featuresTab');
+        if (this.state.unlockedContent.storageTab) this.applyUIUnlocks('storageTab');
+        if (this.state.unlockedContent.automationTab) this.applyUIUnlocks('automationTab');
         
         // Add more as needed for other UI elements
     },

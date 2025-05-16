@@ -256,27 +256,45 @@ h1 {
     overflow-y: auto; /* Changed from scroll to auto */
 }
 
-.side-panel-tabs {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--accent-color);
-}
-
+/* Side panel tab buttons */
 .tab-btn[data-tab="features"],
 .tab-btn[data-tab="storage"],
 .tab-btn[data-tab="automation"] {
-    display: none;
+    display: none; /* Hidden by default until unlocked */
 }
 
-/* Hide the corresponding tab content */
+/* Optional: Animation for when tabs appear */
+@keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* When JavaScript sets display:block, add this animation */
+.tab-btn[style*="display: block"] {
+    animation: tabFadeIn 0.5s ease-out;
+}
+
+/* Tab content */
 #features-tab,
 #storage-tab,
 #automation-tab {
-    display: none;
+    display: none; /* Hidden by default */
 }
 
-/* Optional: Make the production tab button take full width */
+/* Ensure the production tab takes full width if it's the only visible tab */
+.side-panel-tabs {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping if many tabs become visible */
+}
+
+/* Adjust tab button width based on number of visible buttons */
+.tab-btn {
+    min-width: 80px; /* Minimum width */
+    text-align: center;
+}
+
+/* When tabs are hidden, make production tab full width */
 .tab-btn[data-tab="production"] {
     flex: 1;
 }
