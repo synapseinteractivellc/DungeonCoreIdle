@@ -137,7 +137,8 @@ const Game = {
                     baseCost: 75,
                     effect: 100,  // Adds +100 to manaCapacity
                     count: 0,
-                    unlocked: true,
+                    unlocked: false,                    
+                    unlockAt: 75,
                     affordable: false
                 },
                 {
