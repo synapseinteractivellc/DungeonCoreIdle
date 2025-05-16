@@ -14,7 +14,7 @@ const Game = {
             manaPerClick: 1,
             manaPerSecond: 0,
             dungeonSize: 0,           // Current used space in the dungeon
-            maxDungeonSize: 5,        // Max available space in the dungeon
+            maxDungeonSize: 1,        // Max available space in the dungeon
             coreLevel: 1,
             coreType: 'Stone Core',
             evolutionProgress: 0,
