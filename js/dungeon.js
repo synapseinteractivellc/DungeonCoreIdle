@@ -23,6 +23,21 @@ const Dungeon = {
     
     // Initialize grid state
     initializeGridState() {
+        // Check if we have a saved grid state
+        if (Game.state.dungeonGrid && Game.state.dungeonGrid.length > 0) {
+            // Use the saved grid state
+            this.gridState = Game.state.dungeonGrid;
+        } else {
+            // Create a new grid state
+            this.createDefaultGridState();
+        }
+        
+        // Always update available cells after initializing
+        this.updateAvailableCells();
+    },
+    
+    // Create a default grid state based on current dungeon size
+    createDefaultGridState() {
         // Create a 15x15 grid with all cells locked by default
         this.gridState = Array(this.gridSize).fill().map(() => Array(this.gridSize).fill('locked'));
         
@@ -40,9 +55,12 @@ const Dungeon = {
                 this.gridState[row][col] = 'unlocked';
             });
         }
-        
-        // Mark available cells (adjacent to unlocked or core)
-        this.updateAvailableCells();
+    },
+    
+    // Save the current grid state to the game state
+    saveGridState() {
+        // Store the grid state in the game state
+        Game.state.dungeonGrid = this.gridState;
     },
     
     // Get cells to unlock in a spiral pattern starting from center
@@ -276,6 +294,9 @@ const Dungeon = {
         
         // Update available cells
         this.updateAvailableCells();
+        
+        // Save the grid state to game state
+        this.saveGridState();
         
         // Update display
         this.updateDungeonDisplay();

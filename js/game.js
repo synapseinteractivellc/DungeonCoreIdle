@@ -231,7 +231,8 @@ const Game = {
                     unlocked: false,
                     affordable: false
                 }
-            ]
+            ],
+            dungeonGrid: []
         };
     },
     
