@@ -27,14 +27,18 @@ This document outlines the development roadmap for Dungeon Core Idle, breaking d
   - [X] Lure System (implemented as Lures)
   - [X] Trap Mastery
   - [X] Core Enhancement
+  - [ ] Absorbtion  
+  - [ ] Mana Generation
+  - [ ] Mana Bank
 - [X] Add research point accrual system (implemented using mana instead of separate research points)
 - [X] Implement research effects on game mechanics
 
 ### Dungeon Growth (Week 4-5)
-- [ ] Implement dungeon size mechanic
-- [ ] Create expansion system
+- [X] Implement dungeon size mechanic
+- [X] Create expansion system
 - [ ] Add placement restrictions based on dungeon size
-- [ ] Implement visualization of dungeon growth
+- [X] Implement visualization of dungeon growth
+- [ ] Create an entrance (alter initial core placement, left hand side)
 
 ### Skills System (Week 5-6)
 - [ ] Design skill unlocking mechanism

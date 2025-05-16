@@ -93,19 +93,44 @@ h1 {
     overflow: hidden;
     margin-bottom: 1rem;
     width: 100%;
+    justify-content: flex-start;
 }
 
 .nav-btn {
     flex: 1;
+    position: relative;
+    overflow: visible !important;
     background-color: transparent;
     border: none;
     color: var(--text-color);
+    min-width: 120px;
     padding: 0.8rem 1rem;
     font-family: var(--title-font);
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
     border-bottom: 3px solid transparent;
+}
+
+.nav-btn[data-section="research"],
+.nav-btn[data-section="dungeon"],
+.nav-btn[data-section="skills"] {
+    display: none;
+}
+
+/* Add a class that we'll use to show tabs when they're unlocked */
+.nav-btn[data-section="dungeon"].unlocked {
+    display: block;
+}
+
+.nav-btn.unlocked {
+    display: block;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .nav-btn:hover {
@@ -116,11 +141,6 @@ h1 {
     background-color: rgba(79, 138, 139, 0.3);
     border-bottom: 3px solid var(--accent-color);
     font-weight: bold;
-}
-
-.nav-btn {
-    position: relative;
-    overflow: visible !important;
 }
 
 .nav-progress-indicator {
@@ -241,6 +261,30 @@ h1 {
     justify-content: space-between;
     margin-bottom: 1rem;
     border-bottom: 1px solid var(--accent-color);
+}
+
+.tab-btn[data-tab="features"],
+.tab-btn[data-tab="storage"],
+.tab-btn[data-tab="automation"] {
+    display: none;
+}
+
+/* Hide the corresponding tab content */
+#features-tab,
+#storage-tab,
+#automation-tab {
+    display: none;
+}
+
+/* Optional: Make the production tab button take full width */
+.tab-btn[data-tab="production"] {
+    flex: 1;
+}
+
+/* Optional: Make the side panel narrower since we have fewer tabs */
+.side-panel {
+    flex: 0.8; /* Make it slightly smaller than before */
+    min-width: 220px; /* Adjust as needed */
 }
 
 .tab-btn {

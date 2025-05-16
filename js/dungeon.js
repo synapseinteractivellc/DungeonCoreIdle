@@ -160,7 +160,7 @@ const Dungeon = {
         const currentSize = Game.state.maxDungeonSize;
         
         // For cells beyond the starting 1, calculate cost with increasing multiplier
-        return Math.floor(this.expansionCost * Math.pow(this.costMultiplier, currentSize - 1));
+        return Math.floor(this.expansionCost * Math.pow(this.costMultiplier, currentSize));
     },
     
     // Set up the dungeon UI
@@ -290,6 +290,7 @@ const Dungeon = {
         // Purchase the expansion
         Game.state.mana -= cost;
         Game.state.maxDungeonSize += 1;
+        Game.calculateManaCapacity();
         this.gridState[row][col] = 'unlocked';
         
         // Update available cells

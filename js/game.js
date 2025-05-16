@@ -14,12 +14,25 @@ const Game = {
             manaPerClick: 1,
             manaPerSecond: 0,
             dungeonSize: 0,           // Current used space in the dungeon
-            maxDungeonSize: 1,        // Max available space in the dungeon
+            maxDungeonSize: 0,        // Max available space in the dungeon
             coreLevel: 1,
             coreType: 'Stone Core',
             evolutionProgress: 0,
             evolutionThreshold: 1000000,
             lastSave: Date.now(),
+
+            // Unlocked UI content
+            unlockedContent: {
+                // Nav tabs
+                dungeonNav: false,
+                researchNav: false,
+                skillsNav: false,
+                
+                // Side panel tabs
+                featuresTab: false,
+                storageTab: false,
+                automationTab: false
+            },
             
             // Multipliers for various game mechanics
             multipliers: {
@@ -256,6 +269,9 @@ const Game = {
             this.loadGame();
         }
         
+        // Apply any UI unlocks from saved state
+        this.applyAllUIUnlocks();
+        
         // Initialize the research system
         Research.init();
         
@@ -463,6 +479,10 @@ const Game = {
         // start with base of 100
         let baseCapacity = 100;
 
+        capacityIncreaseFromSize = this.state.maxDungeonSize * 75;
+
+        baseCapacity += capacityIncreaseFromSize;
+
         // Add effects from all storage upgrades
         this.state.upgrades.forEach(upgrade => {
             if (upgrade.type === 'storage') {
@@ -597,7 +617,61 @@ const Game = {
             }
         });
         
-        return newUnlocks;
+        // Check UI unlocks - returns true if anything new was unlocked
+        const uiUnlocks = this.checkUIUnlocks();
+        
+        return newUnlocks || uiUnlocks;
+    },
+
+    // Check for UI unlocks based on game progress
+    checkUIUnlocks() {
+        let anyNewUnlocks = false;
+        
+        // Unlock Dungeon tab at 100 total mana
+        if (!this.state.unlockedContent.dungeonNav && this.state.mana >= 100) {
+            this.state.unlockedContent.dungeonNav = true;
+            this.applyUIUnlocks('dungeonNav');
+            anyNewUnlocks = true;
+            
+            // Show a notification
+            if (window.UI) {
+                UI.showNotification('Dungeon expansion unlocked!');
+            }
+        }
+        
+        return anyNewUnlocks;
+    },
+
+    // Apply UI unlocks in the DOM
+    applyUIUnlocks(unlockType) {
+        switch(unlockType) {
+            case 'dungeonNav':
+                const dungeonBtn = document.querySelector('.nav-btn[data-section="dungeon"]');
+                if (dungeonBtn) dungeonBtn.classList.add('unlocked');
+                break;
+                
+            case 'researchNav':
+                const researchBtn = document.querySelector('.nav-btn[data-section="research"]');
+                if (researchBtn) researchBtn.classList.add('unlocked');
+                break;
+                
+            case 'skillsNav':
+                const skillsBtn = document.querySelector('.nav-btn[data-section="skills"]');
+                if (skillsBtn) skillsBtn.classList.add('unlocked');
+                break;
+                
+            // Add cases for other UI elements as needed
+        }
+    },
+
+    // Apply all currently unlocked UI elements
+    applyAllUIUnlocks() {
+        // Apply each unlocked element
+        if (this.state.unlockedContent.dungeonNav) this.applyUIUnlocks('dungeonNav');
+        if (this.state.unlockedContent.researchNav) this.applyUIUnlocks('researchNav');
+        if (this.state.unlockedContent.skillsNav) this.applyUIUnlocks('skillsNav');
+        
+        // Add more as needed for other UI elements
     },
 
     checkEvolution() {
