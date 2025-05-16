@@ -116,6 +116,9 @@ const UI = {
         
         // Set up event listeners
         this.setupEventListeners();
+
+        // Set up tab visibility
+        this.initializeTabVisibility();
     },
 
     // Update the setupEventListeners method to handle navigation
@@ -279,6 +282,64 @@ const UI = {
         document.getElementById(`${sectionId}-section`).classList.add('active');
     },
 
+    // Add this to UI object
+    refreshTabDisplay() {
+        // Get all visible tab buttons
+        const visibleTabs = Array.from(this.elements.tabButtons).filter(btn => 
+            window.getComputedStyle(btn).display !== 'none');
+        
+        // If no active tab, activate the first one
+        const hasActiveTab = visibleTabs.some(tab => tab.classList.contains('active'));
+        
+        if (!hasActiveTab && visibleTabs.length > 0) {
+            // Activate the first visible tab
+            visibleTabs[0].classList.add('active');
+            const tabId = visibleTabs[0].dataset.tab;
+            
+            // Show its content
+            this.elements.tabContents.forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
+            
+            const activeContent = document.getElementById(`${tabId}-tab`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+                activeContent.style.display = 'flex';
+            }
+        }
+    },
+
+    initializeTabVisibility() {
+        // Hide all tab contents first
+        this.elements.tabContents.forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show only the active tab content
+        const activeTabBtn = document.querySelector('.tab-btn.active');
+        if (activeTabBtn) {
+            const activeTabId = activeTabBtn.dataset.tab;
+            const activeTabContent = document.getElementById(`${activeTabId}-tab`);
+            if (activeTabContent) {
+                activeTabContent.style.display = 'flex';
+            }
+        } else {
+            // If no tab is active, activate the first visible one
+            const firstVisibleTab = Array.from(this.elements.tabButtons).find(btn => 
+                window.getComputedStyle(btn).display !== 'none');
+            
+            if (firstVisibleTab) {
+                firstVisibleTab.classList.add('active');
+                const tabId = firstVisibleTab.dataset.tab;
+                const tabContent = document.getElementById(`${tabId}-tab`);
+                if (tabContent) {
+                    tabContent.style.display = 'flex';
+                }
+            }
+        }
+    },
+
     // Handle tab switching in the side panel
     handleTabSwitch(event) {
         const tabId = event.target.dataset.tab;
@@ -289,11 +350,18 @@ const UI = {
         });
         event.target.classList.add('active');
         
-        // Update active tab content
+        // Update active tab content - make sure ALL tabs are hidden first
         this.elements.tabContents.forEach(content => {
             content.classList.remove('active');
+            content.style.display = 'none'; // Ensure it's hidden
         });
-        document.getElementById(`${tabId}-tab`).classList.add('active');
+        
+        // Then show only the active one
+        const activeTab = document.getElementById(`${tabId}-tab`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+            activeTab.style.display = 'flex';
+        }
     },
 
     // Add a notification method

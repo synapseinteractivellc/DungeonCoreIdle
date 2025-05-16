@@ -676,22 +676,25 @@ const Game = {
             case 'featuresTab':
                 const featuresTab = document.querySelector('.tab-btn[data-tab="features"]');
                 const featuresContent = document.getElementById('features-tab');
-                if (featuresTab) featuresTab.style.display = 'block';
-                if (featuresContent) featuresContent.style.display = 'flex';
+                if (featuresTab) { 
+                    featuresTab.style.display = 'block';
+                }
                 break;
                 
             case 'storageTab':
                 const storageTab = document.querySelector('.tab-btn[data-tab="storage"]');
                 const storageContent = document.getElementById('storage-tab');
-                if (storageTab) storageTab.style.display = 'block';
-                if (storageContent) storageContent.style.display = 'flex';
+                if (storageTab) { 
+                    storageTab.style.display = 'block';
+                }
                 break;
                 
             case 'automationTab':
                 const automationTab = document.querySelector('.tab-btn[data-tab="automation"]');
                 const automationContent = document.getElementById('automation-tab');
-                if (automationTab) automationTab.style.display = 'block';
-                if (automationContent) automationContent.style.display = 'flex';
+                if (automationTab) {
+                    automationTab.style.display = 'block';
+                }
                 break;
 
             // Add cases for other UI elements as needed

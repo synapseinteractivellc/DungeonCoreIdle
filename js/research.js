@@ -674,6 +674,11 @@ const Research = {
                     // Apply the UI unlock
                     Game.applyUIUnlocks(effect.value);
                     
+                    // Refresh tab display
+                    if (window.UI && UI.refreshTabDisplay) {
+                        UI.refreshTabDisplay();
+                    }
+
                     // Show a notification
                     if (window.UI) {
                         let notificationText = "New feature unlocked!";
