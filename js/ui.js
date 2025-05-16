@@ -55,6 +55,14 @@ const UI = {
         // Cache new DOM elements
         this.elements.navButtons = document.querySelectorAll('.nav-btn');
         this.elements.gameSections = document.querySelectorAll('.game-section');
+
+        // Cache side panel tab elements
+        this.elements.tabButtons = document.querySelectorAll('.tab-btn');
+        this.elements.tabContents = document.querySelectorAll('.tab-content');
+        this.elements.productionUpgradeList = document.getElementById('productionUpgradeList');
+        this.elements.sizeUpgradeList = document.getElementById('sizeUpgradeList');
+        this.elements.automationUpgradeList = document.getElementById('automationUpgradeList');
+
         
         // Cache stats elements
         this.elements.lifetimeManaDisplay = document.getElementById('lifetimeManaDisplay');
@@ -120,6 +128,10 @@ const UI = {
         // Add navigation event listeners
         this.elements.navButtons.forEach(button => {
             button.addEventListener('click', this.handleNavigation.bind(this));
+        });
+
+        this.elements.tabButtons.forEach(button => {
+            button.addEventListener('click', this.handleTabSwitch.bind(this));
         });
     },
     
@@ -265,6 +277,23 @@ const UI = {
             section.classList.remove('active');
         });
         document.getElementById(`${sectionId}-section`).classList.add('active');
+    },
+
+    // Handle tab switching in the side panel
+    handleTabSwitch(event) {
+        const tabId = event.target.dataset.tab;
+        
+        // Update active button
+        this.elements.tabButtons.forEach(button => {
+            button.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        // Update active tab content
+        this.elements.tabContents.forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${tabId}-tab`).classList.add('active');
     },
 
     // Add a notification method
@@ -430,10 +459,10 @@ const UI = {
 
     // Add new method for rendering upgrades
     renderUpgrades() {
-        const upgradeList = this.elements.upgradeList;
-        if (!upgradeList) return; // Safety check
-        
-        upgradeList.innerHTML = '';
+        // Clear all upgrade lists
+        this.elements.productionUpgradeList.innerHTML = '';
+        this.elements.sizeUpgradeList.innerHTML = '';
+        this.elements.automationUpgradeList.innerHTML = '';
         
         Game.state.upgrades.forEach(upgrade => {
             if (!upgrade.unlocked) return;
@@ -446,19 +475,39 @@ const UI = {
             li.style.opacity = canAfford ? '1' : '0.6';
             li.dataset.upgradeId = upgrade.id;
             
-            if (upgrade.type === 'click') {
+            let targetList;
+            
+            if (upgrade.type === 'click' || upgrade.type === 'storage') {
+                // Production upgrades
+                targetList = this.elements.productionUpgradeList;
+                
+                if (upgrade.type === 'click') {
+                    li.innerHTML = `
+                        <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                        <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                        <div class="feature-effect">+${upgrade.effect} mana/click each</div>
+                    `;
+                } else if (upgrade.type === 'storage') {
+                    li.innerHTML = `
+                        <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                        <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                        <div class="feature-effect">+${upgrade.effect} mana storage</div>
+                    `;
+                }
+            } else if (upgrade.type === 'expansion') {
+                // Size upgrades
+                targetList = this.elements.sizeUpgradeList;
+                
                 li.innerHTML = `
                     <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                    <div class="feature-effect">+${upgrade.effect} mana/click each</div>
-                `;
-            } else if (upgrade.type === 'storage') {
-                li.innerHTML = `
-                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
-                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                    <div class="feature-effect">+${upgrade.effect} mana storage</div>
+                    <div class="feature-effect">+${upgrade.effect} dungeon size</div>
+                    <div class="feature-effect">Current space: ${Game.state.dungeonSize}/${Game.state.maxDungeonSize}</div>
                 `;
             } else if (upgrade.type === 'automation') {
+                // Automation upgrades
+                targetList = this.elements.automationUpgradeList;
+                
                 // Special display for automation upgrades
                 const status = upgrade.count > 0 ? 'Active' : 'Inactive';
                 const statusColor = upgrade.count > 0 ? '#8aff8a' : '#e63946';
@@ -467,13 +516,6 @@ const UI = {
                     <div class="feature-name">${upgrade.name} <span class="feature-count" style="color: ${statusColor}">${status}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                     <div class="feature-effect">${upgrade.description}</div>
-                `;
-            } else if (upgrade.type === 'expansion') {
-                li.innerHTML = `
-                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
-                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                    <div class="feature-effect">+${upgrade.effect} dungeon size</div>
-                    <div class="feature-effect">Current space: ${Game.state.dungeonSize}/${Game.state.maxDungeonSize}</div>
                 `;
             }
             
@@ -486,7 +528,10 @@ const UI = {
                 }
             });
             
-            upgradeList.appendChild(li);
+            // Only add the upgrade if we found an appropriate list
+            if (targetList) {
+                targetList.appendChild(li);
+            }
         });
     },
 

@@ -233,6 +233,47 @@ h1 {
     overflow-y: auto; /* Changed from scroll to auto */
 }
 
+.side-panel-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.tab-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    padding: 0.5rem 0.25rem;
+    font-family: var(--body-font);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    flex: 1;
+}
+
+.tab-btn:hover {
+    color: var(--accent-color);
+}
+
+.tab-btn.active {
+    border-bottom: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
 .core-container {
     position: relative;
     width: 200px;
