@@ -82,6 +82,7 @@ h1 {
 .game-container {
     flex-direction: column;
     align-items: flex-start;
+    padding-bottom: 4rem;
 }
 
 /* Navigation Bar Styles */
@@ -205,19 +206,21 @@ h1 {
 }
 
 .game-section.active {
-    display: flex;
-    height: calc(100vh - 200px); /* Adjust height to fit screen minus header and nav */
+  display: flex;
+  min-height: calc(100vh - 200px); /* Change from fixed height to minimum height */
+  max-height: none;
+  overflow-y: auto; /* Add scroll if needed */
 }
 
 .main-panel {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Change from center to flex-start */
-    padding: 1rem;
-    overflow-y: auto; /* Add scrolling to main panel if needed */
-    height: calc(100vh - 200px); /* Set a fixed height to enable scrolling */
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  overflow-y: auto;
+  max-height: none; /* Remove max-height constraint */
+  height: auto; /* Allow natural height */
 }
 
 .side-panel {
@@ -229,7 +232,7 @@ h1 {
     display: flex;
     flex-direction: column;
     min-width: 240px;
-    max-height: calc(100vh - 200px); /* Match main panel height */
+    max-height: none; /* Match main panel height */
     overflow-y: auto; /* Changed from scroll to auto */
 }
 

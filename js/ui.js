@@ -60,7 +60,7 @@ const UI = {
         this.elements.tabButtons = document.querySelectorAll('.tab-btn');
         this.elements.tabContents = document.querySelectorAll('.tab-content');
         this.elements.productionUpgradeList = document.getElementById('productionUpgradeList');
-        this.elements.sizeUpgradeList = document.getElementById('sizeUpgradeList');
+        this.elements.storageUpgradeList = document.getElementById('storageUpgradeList');
         this.elements.automationUpgradeList = document.getElementById('automationUpgradeList');
 
         
@@ -461,7 +461,7 @@ const UI = {
     renderUpgrades() {
         // Clear all upgrade lists
         this.elements.productionUpgradeList.innerHTML = '';
-        this.elements.sizeUpgradeList.innerHTML = '';
+        this.elements.storageUpgradeList.innerHTML = '';
         this.elements.automationUpgradeList.innerHTML = '';
         
         Game.state.upgrades.forEach(upgrade => {
@@ -477,33 +477,24 @@ const UI = {
             
             let targetList;
             
-            if (upgrade.type === 'click' || upgrade.type === 'storage') {
+            if (upgrade.type === 'click' || upgrade.type === 'production') {
                 // Production upgrades
                 targetList = this.elements.productionUpgradeList;
-                
-                if (upgrade.type === 'click') {
-                    li.innerHTML = `
-                        <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
-                        <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                        <div class="feature-effect">+${upgrade.effect} mana/click each</div>
-                    `;
-                } else if (upgrade.type === 'storage') {
-                    li.innerHTML = `
-                        <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
-                        <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                        <div class="feature-effect">+${upgrade.effect} mana storage</div>
-                    `;
-                }
-            } else if (upgrade.type === 'expansion') {
-                // Size upgrades
-                targetList = this.elements.sizeUpgradeList;
                 
                 li.innerHTML = `
                     <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                    <div class="feature-effect">+${upgrade.effect} dungeon size</div>
-                    <div class="feature-effect">Current space: ${Game.state.dungeonSize}/${Game.state.maxDungeonSize}</div>
+                    <div class="feature-effect">+${upgrade.effect} mana/click each</div>
+                    `;
+                
+            } else if (upgrade.type === 'storage') {
+                targetList = this.elements.storageUpgradeList;
+                li.innerHTML = `
+                    <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
+                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                    <div class="feature-effect">+${upgrade.effect} mana storage</div>
                 `;
+            
             } else if (upgrade.type === 'automation') {
                 // Automation upgrades
                 targetList = this.elements.automationUpgradeList;
@@ -519,18 +510,18 @@ const UI = {
                 `;
             }
             
+            // Don't add expansion upgrades to any tab - they're handled on the dungeon page now
+            if (upgrade.type !== 'expansion' && targetList) {
             // Add click handler
             li.addEventListener('click', () => {
                 const success = Game.purchaseUpgrade(upgrade.id);
                 if (success) {
-                    this.updateDisplay();
-                    this.renderUpgrades();
+                this.updateDisplay();
+                this.renderUpgrades();
                 }
             });
             
-            // Only add the upgrade if we found an appropriate list
-            if (targetList) {
-                targetList.appendChild(li);
+            targetList.appendChild(li);
             }
         });
     },
