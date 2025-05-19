@@ -314,7 +314,7 @@ h1 {
     color: var(--text-color);
     padding: 0.5rem 0.25rem;
     font-family: var(--body-font);
-    font-size: 0.8rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
     border-bottom: 2px solid transparent;
