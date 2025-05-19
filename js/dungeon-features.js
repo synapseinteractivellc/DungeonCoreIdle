@@ -15,8 +15,10 @@ const DungeonFeatures = {
     
     // Initialize the feature placement system
     init() {
-        // Create the features panel in the dungeon screen
-        this.createFeaturesPanel();
+        // Create the features panel in the dungeon screen if we're on the dungeon page
+        if (document.querySelector('.nav-btn[data-section="dungeon"].active')) {
+            this.createFeaturesPanel();
+        }
         
         // Set up event listeners for drag and drop
         this.setupEventListeners();
@@ -31,19 +33,22 @@ const DungeonFeatures = {
     // Create the features panel in the dungeon screen
     createFeaturesPanel() {
         const dungeonSection = document.getElementById('dungeon-section');
+        if (!dungeonSection) return;
         
-        // Check if the container already exists
-        let featuresPanel = dungeonSection.querySelector('.dungeon-features-panel');
-        if (featuresPanel) return;
+        // Remove any existing panel first to avoid duplicates
+        let existingPanel = dungeonSection.querySelector('.dungeon-features-panel');
+        if (existingPanel) {
+            existingPanel.remove();
+        }
         
         // Create the panel
-        featuresPanel = document.createElement('div');
+        const featuresPanel = document.createElement('div');
         featuresPanel.className = 'dungeon-features-panel';
         featuresPanel.innerHTML = `
             <h3>AVAILABLE FEATURES</h3>
             <p class="feature-instructions">Drag features to place them in your dungeon</p>
             <div class="available-features-container" id="available-features-container">
-                <p class="no-features-message">Purchase features from the main screen to place them in your dungeon.</p>
+                <!-- Features will be added here dynamically -->
             </div>
         `;
         
@@ -66,6 +71,21 @@ const DungeonFeatures = {
                     this.removeFeature(featureElement.dataset.id);
                 }
             }
+        });
+        
+        // Add tab change listener to create features panel when switching to dungeon tab
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const section = e.target.dataset.section;
+                if (section === 'dungeon') {
+                    // Small delay to ensure DOM is updated
+                    setTimeout(() => {
+                        this.createFeaturesPanel();
+                        this.updateFeaturesPanel();
+                    }, 100);
+                }
+            });
         });
     },
     
@@ -107,13 +127,17 @@ const DungeonFeatures = {
         // Calculate offset for centered dragging
         const rect = featureElement.getBoundingClientRect();
         this.dragOffset = {
-            x: e.clientX - rect.left - rect.width / 2,
-            y: e.clientY - rect.top - rect.height / 2
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
         };
         
         // Create a clone for dragging
-        const clone = featureElement.cloneNode(true);
-        clone.classList.add('feature-item-dragging');
+        const clone = document.createElement('div');
+        clone.className = 'feature-item-dragging';
+        
+        // Copy the HTML content
+        clone.innerHTML = featureElement.innerHTML;
+        
         document.body.appendChild(clone);
         this.draggedFeature.clone = clone;
         
@@ -246,6 +270,8 @@ const DungeonFeatures = {
         const { width, height } = this.getFeatureDimensions(featureId);
         
         // Check grid boundaries
+        if (!Dungeon.gridState) return false;
+        
         const gridState = Dungeon.gridState;
         const gridSize = Dungeon.gridSize;
         
@@ -471,13 +497,8 @@ const DungeonFeatures = {
             const icon = this.getFeatureIcon(feature.id);
             
             // Create size display (width x height)
-            let sizeDisplay;
-            let sizeValue;
-            
-            // Feature dimensions
             const { width, height } = this.getFeatureDimensions(feature.id);
-            sizeDisplay = `${width}x${height}`;
-            sizeValue = width * height; // For space calculation
+            const sizeDisplay = `${width}x${height}`;
             
             featureElement.innerHTML = `
                 <div class="feature-icon">${icon}</div>
