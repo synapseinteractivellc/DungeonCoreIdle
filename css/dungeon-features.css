@@ -1,0 +1,327 @@
+/* css/dungeon-features.css */
+
+/* Dungeon Features Placement Styles */
+.dungeon-features-panel {
+    display: flex;
+    flex-direction: column;
+    background-color: #16213e;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 350px;
+    position: absolute;
+    top: 160px;
+    right: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(79, 138, 139, 0.3);
+}
+
+.dungeon-features-panel h3 {
+    font-family: var(--title-font);
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(79, 138, 139, 0.5);
+    padding-bottom: 0.5rem;
+    position: relative;
+}
+
+.dungeon-features-panel h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(79, 138, 139, 0.7), transparent);
+}
+
+.feature-instructions {
+    color: #a0a0d0;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.available-features-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 80px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.no-features-message {
+    color: #a0a0d0;
+    width: 100%;
+    text-align: center;
+    font-style: italic;
+}
+
+.feature-item-draggable {
+    background-color: #0f3460;
+    border: 1px solid rgba(79, 138, 139, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 0.75rem;
+}
+
+.feature-item-draggable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    background-color: #195190;
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: #7579e7;
+    margin-right: 1rem;
+    text-shadow: 0 0 5px rgba(117, 121, 231, 0.5);
+}
+
+.feature-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.feature-name-label {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+.feature-count-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #4f8a8b;
+    color: white;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.feature-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+}
+
+.feature-size-badge {
+    font-size: 0.8rem;
+    color: #a0a0d0;
+    background-color: rgba(15, 52, 96, 0.8);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(79, 138, 139, 0.3);
+}
+
+.feature-effect-badge {
+    font-size: 0.8rem;
+    color: #8aff8a;
+}
+
+/* Feature being dragged */
+.feature-item-dragging {
+    position: absolute;
+    z-index: 1000;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    background-color: #195190;
+    border: 1px solid #4f8a8b;
+    border-radius: 8px;
+}
+
+/* Feature placement preview on grid */
+.feature-placement-preview {
+    position: absolute;
+    border: 2px dashed #4f8a8b;
+    background-color: rgba(79, 138, 139, 0.2);
+    pointer-events: none;
+    z-index: 10;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.feature-placement-preview.valid {
+    background-color: rgba(138, 255, 138, 0.3);
+    border-color: #8aff8a;
+    box-shadow: 0 0 10px rgba(138, 255, 138, 0.3);
+}
+
+.feature-placement-preview.invalid {
+    background-color: rgba(230, 57, 70, 0.3);
+    border-color: #e63946;
+    box-shadow: 0 0 10px rgba(230, 57, 70, 0.3);
+}
+
+/* Placed feature styles */
+.placed-feature {
+    position: absolute;
+    background-color: #0f3460;
+    border: 2px solid #4f8a8b;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s, transform 0.2s;
+    overflow: hidden;
+}
+
+.placed-feature::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(117, 121, 231, 0.2) 0%, rgba(15, 52, 96, 0) 70%);
+    pointer-events: none;
+}
+
+.placed-feature:hover {
+    box-shadow: 0 0 10px rgba(79, 138, 139, 0.5);
+    z-index: 6;
+    transform: translateY(-2px);
+}
+
+.placed-feature-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+}
+
+.placed-feature-icon {
+    font-size: 1.6rem;
+    color: #7579e7;
+    text-shadow: 0 0 5px rgba(117, 121, 231, 0.5);
+    margin-bottom: 0.2rem;
+}
+
+.placed-feature-name {
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Remove button for placed features */
+.remove-feature-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #e63946;
+    color: white;
+    border: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.placed-feature:hover .remove-feature-btn {
+    opacity: 1;
+}
+
+.remove-feature-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Ensure grid is set up for positioning features */
+.dungeon-grid {
+    position: relative; /* Important for absolute positioning of features */
+    background-color: rgba(15, 52, 96, 0.2);
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin: 0 auto 1.5rem auto;
+}
+
+/* Tooltips that appear when hovering over placed features */
+.feature-tooltip {
+    position: absolute;
+    background-color: #16213e;
+    border: 1px solid #4f8a8b;
+    border-radius: 4px;
+    padding: 0.8rem;
+    z-index: 100;
+    font-size: 0.8rem;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+.feature-tooltip-header {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #4f8a8b;
+    border-bottom: 1px solid rgba(79, 138, 139, 0.3);
+    padding-bottom: 0.3rem;
+}
+
+.feature-tooltip-effect {
+    color: #8aff8a;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* Modified cell styles for better appearance */
+.dungeon-cell {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.unlocked-cell {
+    background-color: #0f3460;
+    border: 2px solid #4f8a8b;
+}
+
+.core-cell {
+    background-color: #16213e;
+    border: 2px solid #7579e7;
+    box-shadow: 0 0 15px rgba(117, 121, 231, 0.5);
+}
+
+.available-cell {
+    background-color: rgba(79, 138, 139, 0.2);
+    border: 2px dashed #4f8a8b;
+    cursor: pointer;
+}
+
+.available-cell:hover {
+    background-color: rgba(79, 138, 139, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}

@@ -17,7 +17,12 @@ function initGame() {
     ResearchUI.init();
     
     // Initialize Dungeon system
-    Dungeon.init();  // Add this line
+    Dungeon.init();
+
+    // Initialize DungeonFeatures system if available
+    if (window.DungeonFeatures) {
+        DungeonFeatures.init();
+    }
     
     // Initial render
     UI.updateDisplay();
@@ -48,6 +53,10 @@ function gameLoop() {
         // Update dungeon display when features change
         if (window.Dungeon) {
             Dungeon.updateDungeonDisplay();
+        }
+
+        if (window.DungeonFeatures) {
+            DungeonFeatures.updateFeaturesPanel();
         }
     }
     

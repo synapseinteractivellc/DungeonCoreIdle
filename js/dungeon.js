@@ -1,4 +1,4 @@
-// Updated Dungeon System Implementation
+// Updated Dungeon System Implementation with Feature Placement
 const Dungeon = {
     // Grid state to track unlocked cells
     gridState: [],
@@ -19,6 +19,11 @@ const Dungeon = {
         
         // Update UI to match game state
         this.updateDungeonDisplay();
+        
+        // Initialize the DungeonFeatures system if it exists
+        if (window.DungeonFeatures) {
+            DungeonFeatures.init();
+        }
     },
     
     // Initialize grid state
@@ -195,7 +200,7 @@ const Dungeon = {
         if (dungeonSection.querySelector('.placeholder-content')) {
             dungeonSection.innerHTML = `
                 <div class="dungeon-grid-container">
-                  <h2>Dungeon Expansion</h2>
+                  <h2>DUNGEON EXPANSION</h2>
                   <p class="dungeon-description">Expand your dungeon by purchasing adjacent cells. Your core is located at the entrance on the left side. Click on highlighted cells to expand.</p>
                   
                   <div class="dungeon-grid">
@@ -327,6 +332,11 @@ const Dungeon = {
         // Update display
         this.updateDungeonDisplay();
         UI.updateDisplay();
+        
+        // Update the DungeonFeatures panel if it exists
+        if (window.DungeonFeatures) {
+            DungeonFeatures.updateFeaturesPanel();
+        }
         
         UI.showNotification('Dungeon expanded!');
     },

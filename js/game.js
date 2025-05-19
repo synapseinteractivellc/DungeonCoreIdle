@@ -425,10 +425,24 @@ const Game = {
     calculateManaPerSecond() {
         let basePerSecond = 0;
         
-        // Calculate base value from features
+        /*
+        // Calculate base value from owned features (not placed)
         this.state.features.forEach(feature => {
             basePerSecond += this.calculateFeatureEffect(feature);
         });
+        */
+        
+        // Add bonus from placed features
+        if (this.state.placedFeatures && this.state.placedFeatures.length > 0) {
+            this.state.placedFeatures.forEach(placedFeature => {
+                // Find the feature definition to get its effect
+                const featureDef = this.state.features.find(f => f.id === placedFeature.featureId);
+                if (featureDef) {
+                    // Each placed feature contributes its base effect
+                    basePerSecond += featureDef.baseEffect;
+                }
+            });
+        }
         
         // Apply multipliers
         let totalMultiplier = 1;
