@@ -533,53 +533,76 @@ const UI = {
         this.elements.automationUpgradeList.innerHTML = '';
         
         Game.state.upgrades.forEach(upgrade => {
+            // Early return if upgrade is not unlocked
             if (!upgrade.unlocked) return;
             
             const cost = Game.calculateUpgradeCost(upgrade);
             const canAfford = Game.state.mana >= cost;
             
             const li = document.createElement('li');
-            li.className = 'feature-item'; // Reusing the feature-item class
+            li.className = 'feature-item';
             li.style.opacity = canAfford ? '1' : '0.6';
             li.dataset.upgradeId = upgrade.id;
             
             let targetList;
             
-            if (upgrade.type === 'click' || upgrade.type === 'production') {
-                // Production upgrades
+            // Production upgrades (click and production types)
+            if (upgrade.type === 'click' || upgrade.type === 'production') {            
                 targetList = this.elements.productionUpgradeList;
                 
                 li.innerHTML = `
                     <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                     <div class="feature-effect">+${upgrade.effect} mana/click each</div>
-                    `;
+                `;
                 
-            } else if (upgrade.type === 'storage') {
+                // Add click handler for purchase
+                li.addEventListener('click', () => {
+                    const success = Game.purchaseUpgrade(upgrade.id);
+                    if (success) {
+                        this.updateDisplay();
+                        this.renderUpgrades();
+                    }
+                });
+                
+                targetList.appendChild(li);
+                return; // Exit early after handling production upgrades
+            }
+            
+            // Storage upgrades
+            if (upgrade.type === 'storage') {
                 targetList = this.elements.storageUpgradeList;
+                
                 li.innerHTML = `
                     <div class="feature-name">${upgrade.name} <span class="feature-count">Lvl ${upgrade.count}</span></div>
                     <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
                     <div class="feature-effect">+${upgrade.effect} mana storage</div>
                 `;
+                
+                // Add click handler for purchase
+                li.addEventListener('click', () => {
+                    const success = Game.purchaseUpgrade(upgrade.id);
+                    if (success) {
+                        this.updateDisplay();
+                        this.renderUpgrades();
+                    }
+                });
+                
+                targetList.appendChild(li);
+                return; // Exit early after handling storage upgrades
+            }
             
-            } else if (upgrade.type === 'automation') {
-                // Automation upgrades
+            // Automation upgrades
+            if (upgrade.type === 'automation') {
                 targetList = this.elements.automationUpgradeList;
                 
-                // Create a container for automation with toggle
-                const li = document.createElement('li');
-                li.className = 'feature-item automation-item';
-                li.style.opacity = canAfford ? '1' : '0.6';
-                li.dataset.upgradeId = upgrade.id;
-                
-                // Check if already purchased
+                // Already purchased - show toggle
                 if (upgrade.count > 0) {
-                    // Already purchased - show toggle
                     const isEnabled = upgrade.enabled !== undefined ? upgrade.enabled : true;
                     const statusText = isEnabled ? 'Active' : 'Inactive';
                     const statusColor = isEnabled ? '#8aff8a' : '#e63946';
                     
+                    li.className = 'feature-item automation-item';
                     li.innerHTML = `
                         <div class="automation-header">
                             <div class="feature-name">${upgrade.name}</div>
