@@ -124,22 +124,34 @@ const DungeonFeatures = {
             feature: feature
         };
         
-        // Calculate offset for centered dragging
-        const rect = featureElement.getBoundingClientRect();
-        this.dragOffset = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
+        // Create a visual representation for dragging that matches the grid size
+        const { width, height } = this.getFeatureDimensions(featureId);
+        const cellSize = this.cellSize + this.cellGap;
         
-        // Create a clone for dragging
         const clone = document.createElement('div');
         clone.className = 'feature-item-dragging';
+        const cloneWidth = width * cellSize - this.cellGap;
+        const cloneHeight = height * cellSize - this.cellGap;
+        clone.style.width = cloneWidth + 'px';
+        clone.style.height = cloneHeight + 'px';
         
-        // Copy the HTML content
-        clone.innerHTML = featureElement.innerHTML;
+        // Add a simple icon and name
+        const icon = this.getFeatureIcon(featureId);
+        clone.innerHTML = `
+            <div class="drag-preview-content">
+                <div class="drag-preview-icon">${icon}</div>
+                <div class="drag-preview-name">${feature.name}</div>
+            </div>
+        `;
         
         document.body.appendChild(clone);
         this.draggedFeature.clone = clone;
+        
+        // Calculate offset to center the smaller clone under the cursor
+        this.dragOffset = {
+            x: cloneWidth / 2,
+            y: cloneHeight / 2
+        };
         
         // Position the clone
         this.updateDragPosition(e);
@@ -173,12 +185,14 @@ const DungeonFeatures = {
         if (gridElement && preview && this.isValidPlacement(preview)) {
             // Get grid coordinates from preview position
             const gridRect = gridElement.getBoundingClientRect();
+            const gridStyle = window.getComputedStyle(gridElement);
+            const gridPadding = parseFloat(gridStyle.paddingLeft) || 0;
             const previewRect = preview.getBoundingClientRect();
             
-            // Calculate grid cell coordinates
+            // Calculate grid cell coordinates accounting for padding
             const cellSize = this.cellSize + this.cellGap;
-            const col = Math.floor((previewRect.left - gridRect.left) / cellSize);
-            const row = Math.floor((previewRect.top - gridRect.top) / cellSize);
+            const col = Math.floor((previewRect.left - gridRect.left - gridPadding) / cellSize);
+            const row = Math.floor((previewRect.top - gridRect.top - gridPadding) / cellSize);
             
             // Place the feature
             this.placeFeature(this.draggedFeature.feature, row, col);
@@ -229,6 +243,8 @@ const DungeonFeatures = {
         if (!gridElement) return;
         
         const gridRect = gridElement.getBoundingClientRect();
+        const gridStyle = window.getComputedStyle(gridElement);
+        const gridPadding = parseFloat(gridStyle.paddingLeft) || 0;
         
         // Check if mouse is over the grid
         const isOverGrid = (
@@ -243,14 +259,14 @@ const DungeonFeatures = {
             return;
         }
         
-        // Calculate cell position
+        // Calculate cell position accounting for padding
         const cellSize = this.cellSize + this.cellGap;
-        const col = Math.floor((e.clientX - gridRect.left) / cellSize);
-        const row = Math.floor((e.clientY - gridRect.top) / cellSize);
+        const col = Math.floor((e.clientX - gridRect.left - gridPadding) / cellSize);
+        const row = Math.floor((e.clientY - gridRect.top - gridPadding) / cellSize);
         
-        // Snap preview to grid
-        const left = gridRect.left + col * cellSize;
-        const top = gridRect.top + row * cellSize;
+        // Snap preview to grid accounting for padding
+        const left = gridRect.left + gridPadding + col * cellSize;
+        const top = gridRect.top + gridPadding + row * cellSize;
         
         preview.style.display = 'block';
         preview.style.left = left + 'px';
@@ -362,11 +378,27 @@ const DungeonFeatures = {
         const gridElement = document.querySelector('.dungeon-grid');
         if (!gridElement) return;
         
+        // Get grid padding
+        const gridStyle = window.getComputedStyle(gridElement);
+        const gridPadding = parseFloat(gridStyle.paddingLeft) || 0;
+        
         // Calculate position
         const cellSize = this.cellSize + this.cellGap;
         
-        // Get feature dimensions
-        const { width, height } = this.getFeatureDimensions(feature.id);
+        // Get feature dimensions - check if we have a placed feature with stored dimensions
+        const placedFeature = this.placedFeatures.find(f => f.id === id);
+        let width, height;
+        
+        if (placedFeature && placedFeature.width && placedFeature.height) {
+            // Use stored dimensions from placed feature
+            width = placedFeature.width;
+            height = placedFeature.height;
+        } else {
+            // Calculate dimensions based on feature ID
+            const dimensions = this.getFeatureDimensions(feature.id);
+            width = dimensions.width;
+            height = dimensions.height;
+        }
         
         // Calculate total size in pixels
         const totalWidth = width * cellSize - this.cellGap;
@@ -378,9 +410,9 @@ const DungeonFeatures = {
         featureElement.dataset.id = id;
         featureElement.dataset.featureId = feature.id;
         
-        // Set position and size
-        featureElement.style.left = (col * cellSize) + 'px';
-        featureElement.style.top = (row * cellSize) + 'px';
+        // Set position and size - account for grid padding in positioning
+        featureElement.style.left = (gridPadding + col * cellSize) + 'px';
+        featureElement.style.top = (gridPadding + row * cellSize) + 'px';
         featureElement.style.width = totalWidth + 'px';
         featureElement.style.height = totalHeight + 'px';
         
@@ -531,6 +563,12 @@ const DungeonFeatures = {
             this.placedFeatures.forEach(placed => {
                 const feature = Game.state.features.find(f => f.id === placed.featureId);
                 if (feature) {
+                    // Ensure the placed feature has the correct dimensions
+                    if (!placed.width || !placed.height) {
+                        const { width, height } = this.getFeatureDimensions(placed.featureId);
+                        placed.width = width;
+                        placed.height = height;
+                    }
                     this.renderPlacedFeature(placed.id, feature, placed.row, placed.col);
                 }
             });

@@ -83,6 +83,25 @@
     background-color: #195190;
 }
 
+.drag-preview-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.drag-preview-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+}
+
+.drag-preview-name {
+    font-size: 0.8rem;
+    color: white;
+}
+
 .feature-icon {
     font-size: 2rem;
     color: #7579e7;
@@ -149,12 +168,11 @@
     pointer-events: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     background-color: #195190;
-    border: 1px solid #4f8a8b;
-    border-radius: 8px;
-    padding: 1rem; /* Match the original element's padding */
+    border: 2px solid #4f8a8b;
+    border-radius: 6px;
     display: flex;
     align-items: center;
-    width: 300px; /* Fixed width to prevent resizing while dragging */
+    justify-content: center;
 }
 
 /* Feature placement preview on grid */
