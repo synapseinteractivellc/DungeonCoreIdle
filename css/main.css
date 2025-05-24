@@ -698,12 +698,6 @@ footer {
     height: 24px;
 }
 
-.toggle-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
 .toggle-slider {
     position: absolute;
     cursor: pointer;
@@ -744,4 +738,21 @@ footer {
 /* Disabled state for unpurchased automation */
 .automation-item[style*="opacity: 0.6"] .toggle-switch {
     pointer-events: none;
+}
+
+.automation-item .toggle-switch {
+    z-index: 10;
+    position: relative;
+    pointer-events: auto;
+}
+
+.toggle-switch input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
 }

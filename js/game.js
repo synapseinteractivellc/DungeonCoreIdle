@@ -590,6 +590,7 @@ const Game = {
 
     // Method to toggle Auto buyers
     toggleAutobuyer(autobuyerId) {
+        console.log("Toggle fires");
         const autobuyer = this.state.upgrades.find(u => u.id === autobuyerId);
         if (autobuyer && autobuyer.type === 'automation' && autobuyer.count > 0) {
             autobuyer.enabled = !autobuyer.enabled;
