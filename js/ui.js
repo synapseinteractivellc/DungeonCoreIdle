@@ -567,29 +567,67 @@ const UI = {
                 // Automation upgrades
                 targetList = this.elements.automationUpgradeList;
                 
-                // Special display for automation upgrades
-                const status = upgrade.count > 0 ? 'Active' : 'Inactive';
-                const statusColor = upgrade.count > 0 ? '#8aff8a' : '#e63946';
+                // Create a container for automation with toggle
+                const li = document.createElement('li');
+                li.className = 'feature-item automation-item';
+                li.style.opacity = canAfford ? '1' : '0.6';
+                li.dataset.upgradeId = upgrade.id;
                 
-                li.innerHTML = `
-                    <div class="feature-name">${upgrade.name} <span class="feature-count" style="color: ${statusColor}">${status}</span></div>
-                    <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
-                    <div class="feature-effect">${upgrade.description}</div>
-                `;
-            }
-            
-            // Don't add expansion upgrades to any tab - they're handled on the dungeon page now
-            if (upgrade.type !== 'expansion' && targetList) {
-            // Add click handler
-            li.addEventListener('click', () => {
-                const success = Game.purchaseUpgrade(upgrade.id);
-                if (success) {
-                this.updateDisplay();
-                this.renderUpgrades();
+                // Check if already purchased
+                if (upgrade.count > 0) {
+                    // Already purchased - show toggle
+                    const isEnabled = upgrade.enabled !== undefined ? upgrade.enabled : true;
+                    const statusText = isEnabled ? 'Active' : 'Inactive';
+                    const statusColor = isEnabled ? '#8aff8a' : '#e63946';
+                    
+                    li.innerHTML = `
+                        <div class="automation-header">
+                            <div class="feature-name">${upgrade.name}</div>
+                            <div class="automation-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle-${upgrade.id}" ${isEnabled ? 'checked' : ''}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="automation-status" style="color: ${statusColor}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div class="feature-effect">${upgrade.description}</div>
+                    `;
+                    
+                    // Add toggle event listener
+                    const toggleInput = li.querySelector(`#toggle-${upgrade.id}`);
+                    toggleInput.addEventListener('change', (e) => {
+                        e.stopPropagation(); // Prevent li click
+                        const newState = Game.toggleAutobuyer(upgrade.id);
+                        
+                        // Update status display
+                        const statusSpan = li.querySelector('.automation-status');
+                        if (newState !== null) {
+                            statusSpan.textContent = newState ? 'Active' : 'Inactive';
+                            statusSpan.style.color = newState ? '#8aff8a' : '#e63946';
+                            
+                            UI.showNotification(`${upgrade.name} ${newState ? 'enabled' : 'disabled'}`);
+                        }
+                    });
+                } else {
+                    // Not purchased yet - show purchase option
+                    li.innerHTML = `
+                        <div class="feature-name">${upgrade.name} <span class="feature-count">Not Purchased</span></div>
+                        <div class="feature-cost">Cost: ${this.formatNumber(cost)} mana</div>
+                        <div class="feature-effect">${upgrade.description}</div>
+                    `;
+                    
+                    // Add click handler for purchase
+                    li.addEventListener('click', () => {
+                        const success = Game.purchaseUpgrade(upgrade.id);
+                        if (success) {
+                            this.updateDisplay();
+                            this.renderUpgrades();
+                        }
+                    });
                 }
-            });
-            
-            targetList.appendChild(li);
+                
+                targetList.appendChild(li);
             }
         });
     },

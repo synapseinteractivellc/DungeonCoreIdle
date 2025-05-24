@@ -663,3 +663,85 @@ footer {
     font-size: 1.5rem;
     color: var(--mana-color);
 }
+
+/* Add to css/main.css */
+
+/* Automation item styles */
+.automation-item {
+    cursor: default !important; /* Override pointer cursor when purchased */
+}
+
+.automation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.automation-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.automation-status {
+    font-size: 0.9rem;
+    font-weight: bold;
+    min-width: 60px;
+}
+
+/* Toggle switch styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #546a7b;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #4f8a8b;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+/* Hover effects */
+.toggle-switch:hover .toggle-slider {
+    box-shadow: 0 0 5px rgba(79, 138, 139, 0.5);
+}
+
+/* Disabled state for unpurchased automation */
+.automation-item[style*="opacity: 0.6"] .toggle-switch {
+    pointer-events: none;
+}

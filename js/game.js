@@ -222,7 +222,8 @@ const Game = {
                     effect: 'automate',
                     count: 0,
                     unlocked: false,
-                    affordable: false
+                    affordable: false,
+                    enabled: true  // Add this - default to enabled when purchased
                 },
                 {
                     id: 'autoUpgradesBuyer',
@@ -233,7 +234,8 @@ const Game = {
                     effect: 'automate',
                     count: 0,
                     unlocked: false,
-                    affordable: false
+                    affordable: false,
+                    enabled: true  // Add this
                 },
                 {
                     id: 'autoStorageBuyer',
@@ -244,7 +246,8 @@ const Game = {
                     effect: 'automate',
                     count: 0,
                     unlocked: false,
-                    affordable: false
+                    affordable: false,
+                    enabled: true  // Add this
                 }
             ],
             dungeonGrid: []
@@ -529,8 +532,8 @@ const Game = {
         
         let purchaseMade = false;
         
-        // Process features autobuyer
-        if (autoFeaturesBuyer && autoFeaturesBuyer.count > 0) {
+        // Process features autobuyer - check if enabled
+        if (autoFeaturesBuyer && autoFeaturesBuyer.count > 0 && autoFeaturesBuyer.enabled) {
             // Sort features by cost (cheapest first)
             const affordableFeatures = this.state.features
                 .filter(f => f.unlocked)
@@ -547,8 +550,8 @@ const Game = {
             }
         }
         
-        // Process click upgrades autobuyer
-        if (autoUpgradesBuyer && autoUpgradesBuyer.count > 0) {
+        // Process click upgrades autobuyer - check if enabled
+        if (autoUpgradesBuyer && autoUpgradesBuyer.count > 0 && autoUpgradesBuyer.enabled) {
             // Sort upgrades by cost for 'click' type
             const clickUpgrades = this.state.upgrades
                 .filter(u => u.unlocked && u.type === 'click')
@@ -565,8 +568,8 @@ const Game = {
             }
         }
         
-        // Process storage upgrades autobuyer
-        if (autoStorageBuyer && autoStorageBuyer.count > 0) {
+        // Process storage upgrades autobuyer - check if enabled
+        if (autoStorageBuyer && autoStorageBuyer.count > 0 && autoStorageBuyer.enabled) {
             // Sort upgrades by cost for 'storage' type
             const storageUpgrades = this.state.upgrades
                 .filter(u => u.unlocked && u.type === 'storage')
@@ -583,6 +586,16 @@ const Game = {
         }
         
         return purchaseMade;
+    },
+
+    // Method to toggle Auto buyers
+    toggleAutobuyer(autobuyerId) {
+        const autobuyer = this.state.upgrades.find(u => u.id === autobuyerId);
+        if (autobuyer && autobuyer.type === 'automation' && autobuyer.count > 0) {
+            autobuyer.enabled = !autobuyer.enabled;
+            return autobuyer.enabled;
+        }
+        return null;
     },
 
     // Add a method to update play time

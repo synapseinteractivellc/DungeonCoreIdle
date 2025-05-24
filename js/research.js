@@ -660,6 +660,22 @@ const Research = {
                     if (upgrade) {
                         upgrade.unlocked = true;
                     }
+                    
+                    // IMPORTANT: Also unlock the automation tab
+                    if (!Game.state.unlockedContent.automationTab) {
+                        Game.state.unlockedContent.automationTab = true;
+                        Game.applyUIUnlocks('automationTab');
+                        
+                        // Refresh tab display
+                        if (window.UI && UI.refreshTabDisplay) {
+                            UI.refreshTabDisplay();
+                        }
+                        
+                        // Show notification about automation tab
+                        if (window.UI) {
+                            UI.showNotification('Automation features unlocked! Check the Automation tab.');
+                        }
+                    }
                 }
                 break;
             
